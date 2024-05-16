@@ -1,0 +1,68 @@
+{
+  "kafka": {
+    "props": {
+      "bootstrap.servers": "localhost:29092",
+      "schema.registry.url": "http://localhost:8081"
+    },
+    "consumers": {
+      "flights": {
+        "topics": ["flightUpdated"],
+        "pollTimeoutSec":10,
+        "props": {
+          "key.deserializer": "jsonvalues.spec.deserializers.confluent.ConfluentDeserializer",
+          "value.deserializer": "jsonvalues.spec.deserializers.confluent.ConfluentDeserializer",
+          "auto.offset.reset": "earliest",
+          "enable.auto.commit": true,
+          "group.id": "flights.cli"
+        }
+      },
+      "messages": {
+        "topics": ["messageSent"],
+        "pollTimeoutSec":10,
+        "props": {
+          "key.deserializer": "org.apache.kafka.common.serialization.StringDeserializer",
+          "value.deserializer": "org.apache.kafka.common.serialization.StringDeserializer",
+          "auto.offset.reset": "latest",
+          "enable.auto.commit": true,
+          "group.id": "messages.cli"
+        }
+      }
+    },
+    "producers": {
+      "producer1": {
+        "props": {
+          "auto.register.schemas": "false",
+          "key.serializer": "jsonvalues.spec.serializers.confluent.ConfluentSerializer",
+          "value.serializer": "jsonvalues.spec.serializers.confluent.ConfluentSerializer",
+          "acks": "all",
+          "request.timeout.ms": 3000,
+          "delivery.timeout.ms": 10000,
+          "linger.ms": 2000
+        }
+      },
+      "producer2": {
+        "props": {
+          "auto.register.schemas": "false",
+          "key.serializer": "org.apache.kafka.common.serialization.StringSerializer",
+          "value.serializer": "org.apache.kafka.common.serialization.StringSerializer",
+          "acks": "all",
+          "request.timeout.ms": 3000,
+          "delivery.timeout.ms": 10000,
+          "linger.ms": 2000
+        }
+      }
+    }
+  },
+  "channels": {
+    "flights": {
+      "producer": "producer1",
+      "topic": "flightUpdated",
+      "key-schema": "{\"type\":\"record\",\"name\":\"SensorStreamingInFlight_Key\",\"namespace\":\"es.eurocontrol.dplt.training.key\",\"fields\":[{\"name\":\"_id\",\"type\":\"string\"}],\"description\":\"Avro scheme with the specification of the in flights aggregation message key\"}",
+      "value-schema": "{\"type\":\"record\",\"name\":\"SensorStreamingInFlight_Record\",\"namespace\":\"es.eurocontrol.dplt.training.record\",\"fields\":[{\"name\":\"origin\",\"type\":\"string\"},{\"name\":\"destination\",\"type\":\"string\"},{\"name\":\"flights\",\"type\":\"int\"}],\"description\":\"Avro scheme with the specification of the in flights aggregation message\"}"
+    },
+    "messages": {
+      "producer": "producer2",
+      "topic": "messageSent"
+    }
+  }
+}
