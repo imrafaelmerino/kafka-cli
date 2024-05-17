@@ -57,11 +57,14 @@
     "flights": {
       "producer": "producer1",
       "topic": "flightUpdated",
+      "key-generator": "id-flight",
+      "value-generator": "flight-stats",
       "key-schema": "{\"type\":\"record\",\"name\":\"SensorStreamingInFlight_Key\",\"namespace\":\"es.eurocontrol.dplt.training.key\",\"fields\":[{\"name\":\"_id\",\"type\":\"string\"}],\"description\":\"Avro scheme with the specification of the in flights aggregation message key\"}",
       "value-schema": "{\"type\":\"record\",\"name\":\"SensorStreamingInFlight_Record\",\"namespace\":\"es.eurocontrol.dplt.training.record\",\"fields\":[{\"name\":\"origin\",\"type\":\"string\"},{\"name\":\"destination\",\"type\":\"string\"},{\"name\":\"flights\",\"type\":\"int\"}],\"description\":\"Avro scheme with the specification of the in flights aggregation message\"}"
     },
     "messages": {
       "producer": "producer2",
+      "value-generator": "message",
       "topic": "messageSent"
     }
   }

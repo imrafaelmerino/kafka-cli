@@ -1,6 +1,5 @@
 package com.github.imrafaelmerino.kafkacli;
 
-import io.confluent.kafka.schemaregistry.avro.AvroSchema;
 import java.util.HashMap;
 import java.util.Map;
 import jsonvalues.JsObj;
@@ -8,13 +7,12 @@ import jsonvalues.JsObjPair;
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Parser;
 
-public class AvroSchemas {
+class AvroSchemas {
 
   Parser avroParser = new Parser();
   Map<String, Schema> keySchemasPerChannel = new HashMap<>();
 
   Map<String, Schema> valueSchemasPerChannel = new HashMap<>();
-
 
 
   public AvroSchemas(final JsObj conf) {
@@ -23,8 +21,8 @@ public class AvroSchemas {
       String channel = pair.key();
       JsObj channelConf = pair.value()
                               .toJsObj();
-      String keySchema = channelConf.getStr("key-schema");
-      String valueSchema = channelConf.getStr("value-schema");
+      String keySchema = channelConf.getStr(ConfigurationFields.KEY_SCHEMA);
+      String valueSchema = channelConf.getStr(ConfigurationFields.VALUE_SCHEMA);
       if (valueSchema != null) {
         valueSchemasPerChannel.put(channel,
                                    avroParser.parse(valueSchema));

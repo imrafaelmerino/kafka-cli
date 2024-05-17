@@ -36,6 +36,18 @@ final class Fun {
     return result;
   }
 
+  static void lockedPrint(String message){
+    synchronized (System.out){
+      System.out.print(message);
+    }
+  }
+
+  static void lockedPrintln(String message){
+    synchronized (System.out){
+      System.out.println(message);
+    }
+  }
+
 }
 
 

@@ -1,27 +1,31 @@
 package com.github.imrafaelmerino.kafkacli;
 
-import static com.github.imrafaelmerino.kafkacli.ConfigurationFields.TOPICS;
+import static com.github.imrafaelmerino.kafkacli.ConfigurationFields.KAFKA;
+import static com.github.imrafaelmerino.kafkacli.ConfigurationFields.KEY_GEN;
+import static com.github.imrafaelmerino.kafkacli.ConfigurationFields.KEY_SCHEMA;
+import static com.github.imrafaelmerino.kafkacli.ConfigurationFields.PRODUCERS;
+import static com.github.imrafaelmerino.kafkacli.ConfigurationFields.PRODUCER_PROPS;
+import static com.github.imrafaelmerino.kafkacli.ConfigurationFields.VALUE_GEN;
+import static com.github.imrafaelmerino.kafkacli.ConfigurationFields.VALUE_SCHEMA;
 
 import fun.gen.Gen;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Duration;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import jio.IO;
+import jio.ExceptionFun;
 import jio.console.Command;
 import jio.console.Console;
 import jio.console.GenerateCommand;
-import jio.console.State;
 import jsonvalues.JsObj;
+import jsonvalues.JsObjPair;
 import jsonvalues.JsPath;
 import jsonvalues.spec.JsObjSpecParser;
+import org.apache.avro.Schema;
+import org.apache.avro.Schema.Parser;
 
 public class CLI {
 
@@ -31,19 +35,13 @@ public class CLI {
     this.generators = generators;
   }
 
-  public CLI() {
-    this(new HashMap<>());
-  }
 
-
-  public static final String LS_PRODUCERS_COMMAND = "list-producers";
-  public static final String LS_CONSUMERS_COMMAND = "list-consumers";
-  public static final String LS_CHANNELS_COMMAND = "list-channels";
-  public static final String CREATE_PRODUCER_COMMAND = "create-producer";
-  public static final String CREATE_CONSUMER_COMMAND = "create-consumer";
-  public static final String CLOSE_CONSUMER_COMMAND = "close-consumer";
-  public static final String CLOSE_PRODUCER_COMMAND = "close-producer";
-  public static final String COMMIT_CONSUMER_COMMAND = "commit-consumer";
+  public static final String METRICS_PRODUCER_COMMAND = "producer-metrics";
+  public static final String CLOSE_ALL_PRODUCERS_COMMAND = "producer-close-all";
+  public static final String CLOSE_ALL_CONSUMERS_COMMAND = "producer-close-all";
+  public static final String ASSIGNMENT_CONSUMER_COMMAND = "consumer-assignments";
+  public static final String REBALANCE_CONSUMER_COMMAND = "consumer-rebalance";
+  public static final String METRICS_CONSUMER_COMMAND = "consumer-metrics";
 
   public void start(String[] args) {
     JsObj conf;
@@ -52,6 +50,9 @@ public class CLI {
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
+
+    validate(conf);
+
     List<Command> myCommands = new ArrayList<>();
 
     KafkaProducers producers = new KafkaProducers();
@@ -59,163 +60,22 @@ public class CLI {
 
     AvroSchemas avroSchemas = new AvroSchemas(conf);
 
-    myCommands.add(new SendGeneratedVal(generators,
-                                        producers,
-                                        avroSchemas));
-    myCommands.add(new Command(CREATE_PRODUCER_COMMAND,
-                               "",
-                               tokens -> tokens[0].equals(CREATE_PRODUCER_COMMAND)) {
-      @Override
-      public Function<String[], IO<String>> apply(final JsObj conf,
-                                                  final State state) {
-        return args -> {
-          var common = conf.getObj(JsPath.fromKey("kafka")
-                                         .key("props"));
-          var producerName = args[1];
-          var producerConf = conf.getObj(JsPath.fromKey("kafka")
-                                               .key("producers")
-                                               .key(producerName)
-                                               .key("props"));
-          producers.createProducer(common,
-                                   producerName,
-                                   producerConf);
-          return IO.succeed("Producer started!");
-        };
-      }
-    });
-    myCommands.add(new Command(COMMIT_CONSUMER_COMMAND,
-                               "",
-                               tokens -> tokens[0].equals(COMMIT_CONSUMER_COMMAND)) {
-      @Override
-      public Function<String[], IO<String>> apply(final JsObj conf,
-                                                  final State state) {
-        return args -> {
-          consumers.commitAsync(args[1]);
-          return IO.succeed("Commit request sent!");
-        };
-      }
-    });
+    myCommands.add(new PublishCommand(generators,
+                                      producers,
+                                      avroSchemas));
+    myCommands.add(new ProducerCreateCommand(producers));
+    myCommands.add(new ConsumerAsyncCommitCommand(consumers));
 
-    myCommands.add(new Command(CLOSE_PRODUCER_COMMAND,
-                               "",
-                               tokens -> tokens[0].equals(CLOSE_PRODUCER_COMMAND)) {
-      @Override
-      public Function<String[], IO<String>> apply(final JsObj conf,
-                                                  final State state) {
-        return args -> {
-          producers.closeProducer(args[1]);
-          return IO.succeed("Producer closed!");
-        };
-      }
-    });
+    myCommands.add(new ProducerStopCommand(producers));
 
-    myCommands.add(new Command(CLOSE_CONSUMER_COMMAND,
-                               "",
-                               tokens -> tokens[0].equals(CLOSE_CONSUMER_COMMAND)) {
-      @Override
-      public Function<String[], IO<String>> apply(final JsObj conf,
-                                                  final State state) {
-        return args -> {
-          consumers.stopConsumer(args[1]);
-          return IO.succeed("Consumer closed!");
-        };
-      }
-    });
+    myCommands.add(new ConsumerStopCommand(consumers));
 
-    myCommands.add(new Command(CREATE_CONSUMER_COMMAND,
-                               "",
-                               tokens -> tokens[0].equals(CREATE_CONSUMER_COMMAND)) {
-      @Override
-      public Function<String[], IO<String>> apply(final JsObj conf,
-                                                  final State state) {
-        return args -> {
-          var common = conf.getObj(JsPath.fromKey("kafka")
-                                         .key("props"));
-          var consumerName = args[1];
-          JsObj consumerConf = conf.getObj(JsPath.fromKey("kafka")
-                                                 .key("consumers")
-                                                 .key(consumerName));
-          var consumerProps = consumerConf.getObj("props");
+    myCommands.add(new ConsumerCreateCommand(consumers));
 
-          Duration pollTimeout = Duration.ofSeconds(consumerConf.getInt(ConfigurationFields.POLL_TIMEOUT_SEC));
-          List<String> topics = consumerConf.getArray(TOPICS)
-                                            .streamOfValues()
-                                            .map(it -> it.toJsStr().value)
-                                            .toList();
-          consumers.createConsumer(common,
-                                   consumerName,
-                                   consumerProps,
-                                   topics,
-                                   pollTimeout);
-          return IO.succeed("Consumer started!");
-        };
-      }
-    });
+    myCommands.add(new ConsumerListCommand(consumers));
+    myCommands.add(new ProducerListCommand(producers));
+    myCommands.add(new ChannelListCommand(producers));
 
-    myCommands.add(new
-
-                       Command(LS_CONSUMERS_COMMAND,
-                               "",
-                               tokens -> tokens[0].
-
-                                   equals(LS_CONSUMERS_COMMAND)) {
-                         @Override
-                         public Function<String[], IO<String>> apply(final JsObj conf,
-                                                                     final State state) {
-                           return args -> {
-                             JsObj consumers = conf.getObj(JsPath.fromKey("kafka")
-                                                                 .key("consumers"));
-                             String result = consumers.keySet()
-                                                      .stream()
-                                                      .collect(Collectors.joining(","));
-                             return IO.succeed(result);
-                           };
-                         }
-                       });
-    myCommands.add(new Command(LS_PRODUCERS_COMMAND,
-                               "Prints out the list of producers defined in the conf file",
-                               tokens -> tokens[0].
-
-                                   equals(LS_PRODUCERS_COMMAND)) {
-      @Override
-      public Function<String[], IO<String>> apply(final JsObj conf,
-                                                  final State state) {
-        return args -> {
-          JsObj producers = conf.getObj(JsPath.fromKey("kafka")
-                                              .key("producers"));
-          String result = producers.keySet()
-                                   .stream()
-                                   .collect(Collectors.joining(","));
-          return IO.succeed(result);
-        };
-      }
-    });
-    myCommands.add(new
-
-                       Command(LS_CHANNELS_COMMAND,
-                               "Prints out the list of consumers defined in the conf file",
-                               tokens -> tokens[0].
-
-                                   equals(LS_CHANNELS_COMMAND)) {
-                         @Override
-                         public Function<String[], IO<String>> apply(final JsObj conf,
-                                                                     final State state) {
-                           return args -> {
-                             JsObj channels = conf.getObj(JsPath.fromKey("channels"));
-                             String result = channels.keySet()
-                                                     .stream()
-                                                     .map(key -> String.format("%s (topic:%s, producer: %s) ",
-                                                                               key,
-                                                                               channels.getObj(key)
-                                                                                       .getStr("topic"),
-                                                                               channels.getObj(key)
-                                                                                       .getStr("producer")
-                                                                              ))
-                                                     .collect(Collectors.joining(","));
-                             return IO.succeed(result);
-                           };
-                         }
-                       });
     for (String genName : generators.keySet()) {
       myCommands.add(new GenerateCommand(genName,
                                          "",
@@ -228,6 +88,92 @@ public class CLI {
 
   }
 
+  private void validate(final JsObj conf) {
+    JsObj channels = conf.getObj(ConfigurationFields.CHANNELS);
+    for (JsObjPair pair : channels) {
+      String channelName = pair.key();
+      JsObj channelConf = pair.value()
+                              .toJsObj();
+      String producerName = channelConf.getStr(ConfigurationFields.PRODUCER);
+      if (!ConfigurationQueries.getProducers(conf)
+                               .contains(producerName)) {
+        throw new IllegalArgumentException("The producer `%s` associated to the channel `%s` has not been defined in %s".formatted(producerName,
+                                                                                                                                   channelName,
+                                                                                                                                   "/kafka/producers"));
+
+      }
+      String keyGen = channelConf.getStr(KEY_GEN);
+      if (keyGen != null && !generators.containsKey(keyGen)) {
+        throw new IllegalArgumentException(("The generator `%s` associated to the key of the channel `%s` has not been "
+                                            + "created.").formatted(keyGen,
+                                                                    channelName));
+      }
+
+      String valueGen = channelConf.getStr(VALUE_GEN);
+      if (valueGen != null && !generators.containsKey(valueGen)) {
+        throw new IllegalArgumentException(("The generator `%s` associated to the value of the channel `%s` has not "
+                                            + "been created.").formatted(valueGen,
+                                                                         channelName));
+      }
+
+      String keySchema = channelConf.getStr(KEY_SCHEMA);
+      if (keySchema != null) {
+        try {
+          Schema unused = new Parser().parse(keySchema);
+        } catch (Exception e) {
+          throw new IllegalArgumentException("The AVRO schema associated to the key of the channel `%s` is not valid: %s".formatted(channelName,
+                                                                                                                                    ExceptionFun.findUltimateCause(e)
+                                                                                                                                                .toString()));
+        }
+      }
+      String valueSchema = channelConf.getStr(VALUE_SCHEMA);
+      if (valueSchema != null) {
+        try {
+          Schema unused = new Parser().parse(valueSchema);
+        } catch (Exception e) {
+          throw new IllegalArgumentException(("The AVRO schema associated to the value of the channel `%s` is not valid: %s")
+                                                 .formatted(channelName,
+                                                            ExceptionFun.findUltimateCause(e)
+                                                                        .toString()));
+        }
+      }
+
+      //validate key and value serializer of producer
+      JsObj producerProps = ConfigurationQueries.getProducerProps(conf,
+                                                                  producerName);
+
+      if (keySchema != null) {
+        validateSerializer("key.serializer",
+                           producerProps,
+                           producerName);
+      }
+
+      if (valueSchema != null) {
+        validateSerializer("value.serializer",
+                           producerProps,
+                           producerName);
+      }
+
+    }
+  }
+
+  private static void validateSerializer(final String keySerializerField,
+                                         final JsObj producerProps,
+                                         final String producerName) {
+    String keySerializer = producerProps.getStr(keySerializerField);
+    String validSerializer = "jsonvalues.spec.serializers.confluent.ConfluentSerializer";
+    if (!validSerializer.equals(keySerializer)) {
+      JsPath path =
+          JsPath.fromKey(KAFKA)
+                .key(PRODUCERS)
+                .key(producerName)
+                .key(PRODUCER_PROPS)
+                .key(keySerializerField);
+      throw new IllegalArgumentException("The property %s must be set to %s".formatted(path,
+                                                                                       validSerializer));
+    }
+  }
+
   private static JsObj parseConf(final String[] args) throws IOException {
     JsObjSpecParser parser = JsObjSpecParser.of(ConfigurationSpec.global);
     if (args.length == 0) {
@@ -236,7 +182,7 @@ public class CLI {
     var path = Path.of(args[0]);
     if (!path.toFile()
              .exists()) {
-      throw new IllegalArgumentException("File " + path + " not found");
+      throw new IllegalArgumentException(STR."File \{path} not found");
     }
     return parser.parse(Files.readAllBytes(path));
   }

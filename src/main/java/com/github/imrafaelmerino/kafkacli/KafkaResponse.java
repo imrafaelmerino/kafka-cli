@@ -2,7 +2,7 @@ package com.github.imrafaelmerino.kafkacli;
 
 import java.time.Instant;
 
-public record KafkaResponse(Instant receivedAt,
+ record KafkaResponse(Instant receivedAt,
                             long offset,
                             int partition) {
 

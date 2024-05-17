@@ -1,9 +1,6 @@
 package com.github.imrafaelmerino.kafkacli;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -11,16 +8,34 @@ import java.util.function.Function;
 import jsonvalues.JsObj;
 import org.apache.kafka.clients.producer.KafkaProducer;
 
-public final class KafkaProducers implements
-                                  Function<String, KafkaProducer<Object, Object>> {
+final class KafkaProducers implements Function<String, KafkaProducer<Object, Object>> {
 
 
-  private final Map<String, KafkaProducer<Object, Object>> producers = new HashMap<>();
+  private final Map<String, KafkaProducer<Object, Object>> producers;
 
+  public KafkaProducers() {
+    producers = new HashMap<>();
+    Runtime.getRuntime()
+           .addShutdownHook(new Thread(() -> {
+             if (producers != null) {
+               for (KafkaProducer<Object, Object> consumer : producers.values()) {
+                 try {
+                   consumer.close();
+                 } catch (Exception e) {
 
-  public void createProducer(JsObj kafkaCommonConf,
-                             String producerName,
-                             JsObj producerConf) {
+                 }
+               }
+             }
+           }));
+  }
+
+  public boolean isStarted(String producerName) {
+    return producers.containsKey(producerName);
+  }
+
+  public void startProducer(JsObj kafkaCommonConf,
+                            String producerName,
+                            JsObj producerConf) {
 
     Properties kafkaCommonProps = Fun.toProperties(kafkaCommonConf);
 
@@ -33,9 +48,12 @@ public final class KafkaProducers implements
   }
 
   public void closeProducer(String producerName) {
-    this.producers.get(producerName)
-                  .close();
-    this.producers.remove(producerName);
+    KafkaProducer<Object, Object> producer = this.producers.get(producerName);
+    if (producer != null) {
+      producer
+          .close();
+      this.producers.remove(producerName);
+    }
   }
 
 
