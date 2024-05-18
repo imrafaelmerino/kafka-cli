@@ -2,14 +2,19 @@ package com.github.imrafaelmerino.kafkacli;
 
 import java.time.Instant;
 
- record KafkaResponse(Instant receivedAt,
-                            long offset,
-                            int partition) {
+record KafkaResponse(Instant receivedAt,
+                     long offset,
+                     int partition) {
 
-  @Override
-  public String toString() {
-    return
-        STR."""
-        offset=\{offset}, partition=\{partition}, receivedAt=\{receivedAt}""";
+
+  String getResponseReceivedMessage(String topic) {
+    return STR."""
+        Publish response received:
+          Topic: \{topic}
+          Offset: \{offset}
+          Partition: \{partition}
+          ReceivedAt: \{receivedAt}""";
   }
+
+
 }

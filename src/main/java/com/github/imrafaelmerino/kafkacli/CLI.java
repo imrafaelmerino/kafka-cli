@@ -63,14 +63,17 @@ public class CLI {
     myCommands.add(new PublishCommand(generators,
                                       producers,
                                       avroSchemas));
-    myCommands.add(new ProducerCreateCommand(producers));
+    myCommands.add(new PublishFileCommand(generators,
+                                          producers,
+                                          avroSchemas));
+    myCommands.add(new ProducerStartCommand(producers));
     myCommands.add(new ConsumerAsyncCommitCommand(consumers));
 
     myCommands.add(new ProducerStopCommand(producers));
 
     myCommands.add(new ConsumerStopCommand(consumers));
 
-    myCommands.add(new ConsumerCreateCommand(consumers));
+    myCommands.add(new ConsumerStartCommand(consumers));
 
     myCommands.add(new ConsumerListCommand(consumers));
     myCommands.add(new ProducerListCommand(producers));
@@ -131,7 +134,7 @@ public class CLI {
         try {
           Schema unused = new Parser().parse(valueSchema);
         } catch (Exception e) {
-          throw new IllegalArgumentException(("The AVRO schema associated to the value of the channel `%s` is not valid: %s")
+          throw new IllegalArgumentException("The AVRO schema associated to the value of the channel `%s` is not valid: %s"
                                                  .formatted(channelName,
                                                             ExceptionFun.findUltimateCause(e)
                                                                         .toString()));

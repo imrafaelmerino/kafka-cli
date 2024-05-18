@@ -89,5 +89,5 @@ final class ConfigurationSpec {
                                ),
                    CHANNELS,
                    JsSpecs.mapOfSpec(channelSpec)
-                  );
+                  ).lenient();
 }

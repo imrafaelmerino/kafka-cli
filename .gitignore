@@ -1,5 +1,5 @@
 out
 target
-cli.log
 *.iml
 .idea
+*.log

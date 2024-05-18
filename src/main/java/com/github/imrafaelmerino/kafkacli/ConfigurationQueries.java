@@ -28,7 +28,7 @@ public class ConfigurationQueries {
                                     KafkaProducers producers) {
     String producer = conf.getStr(JsPath.fromKey(CHANNELS)
                                         .key(name)
-                                        .key(PRODUCERS));
+                                        .key(PRODUCER));
     return producer != null && producers.apply(producer) != null;
   }
 

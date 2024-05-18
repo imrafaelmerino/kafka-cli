@@ -8,6 +8,7 @@ import jsonvalues.JsObj;
 import jsonvalues.JsObjPair;
 import jsonvalues.JsStr;
 import jsonvalues.JsValue;
+import org.apache.kafka.clients.producer.ProducerRecord;
 
 final class Fun {
 
@@ -36,18 +37,26 @@ final class Fun {
     return result;
   }
 
-  static void lockedPrint(String message){
-    synchronized (System.out){
-      System.out.print(message);
-    }
-  }
 
-  static void lockedPrintln(String message){
-    synchronized (System.out){
-      System.out.println(message);
-    }
-  }
 
+
+  static String getMessageSent(final ProducerRecord<Object, Object> record) {
+
+    return record.key() != null ? """
+        Publish request sent:
+          Topic: %s
+          Key: %s
+          Value: %s
+        """.formatted(record.topic(),
+                      record.key(),
+                      record.value()) :
+           """
+               Publish request sent:
+                 Topic: %s
+                 Value: %s
+               """.formatted(record.topic(),
+                             record.value());
+  }
 }
 
 

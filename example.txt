@@ -1,0 +1,11 @@
+headers: {"field1": "value1", "field2": "value2"}
+key: {"_id":"r"}
+value: {"flights":840,"origin":"M","destination":"t"}
+
+headers: {"field1": "value1", "field2": "value2"}
+value: {"flights":840,"origin":"M","destination":"t"}
+
+key: {"_id":"r"}
+value: {"flights":840,"origin":"M","destination":"t"}
+
+value: {"flights":840,"origin":"M","destination":"t"}

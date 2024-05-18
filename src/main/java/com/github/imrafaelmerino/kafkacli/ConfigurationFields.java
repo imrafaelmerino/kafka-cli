@@ -1,6 +1,6 @@
 package com.github.imrafaelmerino.kafkacli;
 
- final class ConfigurationFields {
+final class ConfigurationFields {
 
   private ConfigurationFields() {
   }
