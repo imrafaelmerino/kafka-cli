@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.github.imrafaelmerino</groupId>
+    <artifactId>kafka-cli-example</artifactId>
+    <version>1.0.0</version>
+    <name>kafka-cli-example</name>
+    <url>https://github.com/imrafaelmerino/kafka-cli</url>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <id>imrafaelmerino</id>
+            <name>Rafael Merino García</name>
+            <email>imrafaelmerino@gmail.com</email>
+        </developer>
+    </developers>
+    <scm>
+        <url>https://github.com/imrafaelmerino/kafka-cli.git</url>
+    </scm>
+
+    <properties>
+        <error-prone.version>2.25.0</error-prone.version>
+        <NEXUS-STAGING-MAVEN-PLUGIN.VERSION>1.6.12</NEXUS-STAGING-MAVEN-PLUGIN.VERSION>
+        <MAVEN-GPG-PLUGIN.VERSION>1.6</MAVEN-GPG-PLUGIN.VERSION>
+        <MAVEN-SOURCE-PLUGIN.VERSION>3.0.1</MAVEN-SOURCE-PLUGIN.VERSION>
+        <project.build.sourceEncoding>UTF8</project.build.sourceEncoding>
+        <MAVEN-COMPILER-PLUGIN.VERSION>3.10.1</MAVEN-COMPILER-PLUGIN.VERSION>
+        <MAVEN-COMPILER-PLUGIN.SOURCE>21</MAVEN-COMPILER-PLUGIN.SOURCE>
+        <MAVEN-COMPILER-PLUGIN.TARGET>21</MAVEN-COMPILER-PLUGIN.TARGET>
+        <MAVEN-JAR-PLUGIN.VERSION>3.2.2</MAVEN-JAR-PLUGIN.VERSION>
+        <JIO-CLI-VERSION>1.0.0-RC1</JIO-CLI-VERSION>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>com.github.imrafaelmerino.kafkacli.MyCLI</mainClass>
+                    <arguments>
+                        <argument>${project.basedir}/conf.json</argument>
+                    </arguments>
+                    <systemProperties>
+                        <systemProperty>
+                            <key>log4jFilePath</key>
+                            <value>${project.basedir}/.kafka.log</value>
+                        </systemProperty>
+                    </systemProperties>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${MAVEN-JAR-PLUGIN.VERSION}</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+                <configuration>
+                    <source>${MAVEN-COMPILER-PLUGIN.SOURCE}</source>
+                    <target>${MAVEN-COMPILER-PLUGIN.TARGET}</target>
+                    <showWarnings>true</showWarnings>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <compilerArgs>
+                        <arg>-XDcompilePolicy=simple</arg>
+                        <arg>-Xplugin:ErrorProne</arg>
+                        <arg>-Xlint:all</arg>
+                        <arg>--enable-preview</arg>
+                    </compilerArgs>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>com.google.errorprone</groupId>
+                            <artifactId>error_prone_core</artifactId>
+                            <version>${error-prone.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>com.github.imrafaelmerino</groupId>
+            <artifactId>kafka-cli</artifactId>
+            <version>${JIO-CLI-VERSION}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.imrafaelmerino</groupId>
+            <artifactId>java-fun</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.imrafaelmerino</groupId>
+            <artifactId>json-values</artifactId>
+            <version>14.0.0-RC3</version>
+        </dependency>
+    </dependencies>
+
+
+</project>

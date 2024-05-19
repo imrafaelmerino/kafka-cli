@@ -15,7 +15,7 @@ final class KafkaProducers implements Function<String, KafkaProducer<Object, Obj
 
     private final Map<String, KafkaProducer<Object, Object>> producers;
 
-    public KafkaProducers() {
+    KafkaProducers() {
         producers = new HashMap<>();
         Runtime.getRuntime()
                .addShutdownHook(new Thread(() -> {
@@ -29,14 +29,14 @@ final class KafkaProducers implements Function<String, KafkaProducer<Object, Obj
                }));
     }
 
-    public boolean isStarted(String producerName) {
+    boolean isStarted(String producerName) {
         return producers.containsKey(producerName);
     }
 
-    public void startProducer(JsObj kafkaCommonConf,
-                              String producerName,
-                              JsObj producerConf
-                             ) {
+    void startProducer(JsObj kafkaCommonConf,
+                       String producerName,
+                       JsObj producerConf
+                      ) {
 
         Properties kafkaCommonProps = Fun.toProperties(kafkaCommonConf);
 
@@ -48,7 +48,7 @@ final class KafkaProducers implements Function<String, KafkaProducer<Object, Obj
 
     }
 
-    public void closeProducer(String producerName) {
+    void closeProducer(String producerName) {
         KafkaProducer<Object, Object> producer = this.producers.get(producerName);
         if (producer != null) {
             producer

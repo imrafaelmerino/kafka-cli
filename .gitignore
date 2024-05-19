@@ -3,3 +3,5 @@ target
 *.iml
 .idea
 *.log
+kafka-cli-example/target
+kafka-cli-example/out

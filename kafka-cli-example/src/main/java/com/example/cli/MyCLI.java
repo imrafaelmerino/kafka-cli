@@ -1,5 +1,6 @@
-package com.github.imrafaelmerino.kafkacli;
+package com.example.cli;
 
+import com.github.imrafaelmerino.kafkacli.KafkaCLI;
 import fun.gen.Gen;
 import fun.gen.StrGen;
 import jsonvalues.gen.JsIntGen;
@@ -30,7 +31,7 @@ public class MyCLI {
         generators.put("message",
                        StrGen.alphabetic(10, 100));
 
-        new CLI(generators).start(args);
+        new KafkaCLI(generators).start(args);
 
     }
 }

@@ -20,10 +20,10 @@ class KafkaConsumers implements
 
 
     private final Map<String, KafkaConsumer<Object, Object>> consumers;
-    ExecutorService service;
+    private final ExecutorService service;
 
 
-    public KafkaConsumers() {
+    KafkaConsumers() {
         consumers = new HashMap<>();
         service = Executors.newCachedThreadPool();
         Runtime.getRuntime()
@@ -45,15 +45,13 @@ class KafkaConsumers implements
                                      final ConsumerRecords<Object, Object> records,
                                      final boolean verbose
                                     ) {
-        StringBuilder summary = new StringBuilder();
 
-        summary.append("\n");
-        summary.append(String.format("Received %d records from topics `%s` in consumer `%s`%n",
-                                     records.count(),
-                                     topics,
-                                     consumerName));
+        String summary =
+                "\nReceived %d records from topics `%s` in consumer `%s`%n".formatted(records.count(),
+                                                                                      topics,
+                                                                                      consumerName);
 
-        ConsolePrinter.printlnResult(summary.toString());
+        ConsolePrinter.printlnResult(summary);
 
         if (verbose) {
             StringBuilder all = new StringBuilder();
@@ -83,17 +81,17 @@ class KafkaConsumers implements
 
     }
 
-    public boolean isStarted(String consumerName) {
+    boolean isStarted(String consumerName) {
         return consumers.containsKey(consumerName);
     }
 
-    public void startConsumer(JsObj kafkaCommonConf,
-                              String consumerName,
-                              JsObj consumerConf,
-                              List<String> topics,
-                              Duration pollTimeout,
-                              boolean verbose
-                             ) {
+    void startConsumer(JsObj kafkaCommonConf,
+                       String consumerName,
+                       JsObj consumerConf,
+                       List<String> topics,
+                       Duration pollTimeout,
+                       boolean verbose
+                      ) {
         Properties kafkaCommonProps = Fun.toProperties(kafkaCommonConf);
 
         Properties consumerProps = Fun.toProperties(consumerConf);
@@ -106,7 +104,7 @@ class KafkaConsumers implements
         this.consumers.put(consumerName,
                            consumer
                           );
-        var unused = service.submit(() -> {
+        service.submit(() -> {
             while (true) {
                 var records = consumer.poll(pollTimeout);
                 if (!records.isEmpty()) {
@@ -120,7 +118,7 @@ class KafkaConsumers implements
 
     }
 
-    public void commitAsync(String consumerName) {
+    void commitAsync(String consumerName) {
         this.consumers.get(consumerName)
                       .commitAsync((_, exception) -> {
                           if (exception == null) {
@@ -132,7 +130,7 @@ class KafkaConsumers implements
                       });
     }
 
-    public void stopConsumer(String consumerName) {
+    void stopConsumer(String consumerName) {
 
         KafkaConsumer<Object, Object> consumer = this.consumers.get(consumerName);
         if (consumer != null) {

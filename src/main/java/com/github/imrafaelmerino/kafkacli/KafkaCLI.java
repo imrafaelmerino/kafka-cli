@@ -9,7 +9,6 @@ import jsonvalues.JsObj;
 import jsonvalues.JsObjPair;
 import jsonvalues.JsPath;
 import jsonvalues.spec.JsObjSpecParser;
-import org.apache.avro.Schema;
 import org.apache.avro.Schema.Parser;
 
 import java.io.IOException;
@@ -22,18 +21,18 @@ import java.util.Map;
 
 import static com.github.imrafaelmerino.kafkacli.ConfigurationFields.*;
 
-public class CLI {
+public class KafkaCLI {
 
 
     final Map<String, Gen<?>> generators;
 
-    public CLI(final Map<String, Gen<?>> generators) {
+    public KafkaCLI(final Map<String, Gen<?>> generators) {
         this.generators = generators;
     }
 
-    private static void validateSerializer(final String keySerializerField,
-                                           final JsObj producerProps,
-                                           final String producerName
+    private static void validateSerializer(String keySerializerField,
+                                           JsObj producerProps,
+                                           String producerName
                                           ) {
         String keySerializer = producerProps.getStr(keySerializerField);
         String validSerializer = "jsonvalues.spec.serializers.confluent.ConfluentSerializer";
@@ -57,7 +56,7 @@ public class CLI {
         var path = Path.of(args[0]);
         if (!path.toFile()
                  .exists()) {
-            throw new IllegalArgumentException(STR."File \{path} not found");
+            throw new IllegalArgumentException("File %s not found".formatted(path));
         }
         return parser.parse(Files.readAllBytes(path));
     }
@@ -141,7 +140,7 @@ public class CLI {
             String keySchema = channelConf.getStr(KEY_SCHEMA);
             if (keySchema != null) {
                 try {
-                    Schema unused = new Parser().parse(keySchema);
+                    new Parser().parse(keySchema);
                 } catch (Exception e) {
                     throw new IllegalArgumentException("The AVRO schema associated to the key of the channel `%s` is not valid: %s".formatted(channelName,
                                                                                                                                               ExceptionFun.findUltimateCause(e)
@@ -151,7 +150,7 @@ public class CLI {
             String valueSchema = channelConf.getStr(VALUE_SCHEMA);
             if (valueSchema != null) {
                 try {
-                    Schema unused = new Parser().parse(valueSchema);
+                    new Parser().parse(valueSchema);
                 } catch (Exception e) {
                     throw new IllegalArgumentException("The AVRO schema associated to the value of the channel `%s` is not valid: %s"
                                                                .formatted(channelName,
