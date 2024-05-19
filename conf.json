@@ -1,5 +1,12 @@
 {
-  "log_file_dir": "/Users/rmerino/Projects/kafka-cli/",
+  "conf": {
+    "log_dir": "/Users/rmerino/Projects/kafka-cli/",
+    "colors": {
+      "error": "\u001B[0;31m",
+      "result": "\u001B[0;34m",
+      "prompt": "\u001B[0;32m"
+    }
+  },
   "kafka": {
     "props": {
       "bootstrap.servers": "localhost:29092",
@@ -7,8 +14,10 @@
     },
     "consumers": {
       "flights": {
-        "topics": ["flightUpdated"],
-        "pollTimeoutSec":10,
+        "topics": [
+          "flightUpdated"
+        ],
+        "pollTimeoutSec": 10,
         "props": {
           "key.deserializer": "jsonvalues.spec.deserializers.confluent.ConfluentDeserializer",
           "value.deserializer": "jsonvalues.spec.deserializers.confluent.ConfluentDeserializer",
@@ -18,12 +27,14 @@
         }
       },
       "messages": {
-        "topics": ["messageSent"],
-        "pollTimeoutSec":10,
+        "topics": [
+          "messageSent"
+        ],
+        "pollTimeoutSec": 10,
         "props": {
           "key.deserializer": "org.apache.kafka.common.serialization.StringDeserializer",
           "value.deserializer": "org.apache.kafka.common.serialization.StringDeserializer",
-          "auto.offset.reset": "latest",
+          "auto.offset.reset": "earliest",
           "enable.auto.commit": true,
           "group.id": "messages.cli"
         }

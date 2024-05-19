@@ -12,10 +12,10 @@ import java.util.List;
 import java.util.function.Function;
 import jio.IO;
 import jio.RetryPolicies;
-import jio.console.Command;
-import jio.console.ConsolePrograms;
-import jio.console.ConsolePrograms.AskForInputParams;
-import jio.console.State;
+import jio.cli.Command;
+import jio.cli.ConsolePrograms;
+import jio.cli.ConsolePrograms.AskForInputParams;
+import jio.cli.State;
 import jsonvalues.JsObj;
 import jsonvalues.JsPath;
 
@@ -25,9 +25,51 @@ class ConsumerStartCommand extends Command {
 
   private final KafkaConsumers consumers;
 
+  private static final String USAGE = """
+      Usage: consumer-start [consumer-name] [-verbose]
+
+      Description:
+      The `consumer-start` command starts a Kafka consumer using the provided configuration.
+
+      Parameters:
+      - consumer-name (optional): The name of the consumer to start. If not provided, the user will be prompted to select from a list of available consumers.
+      - -verbose (optional): If provided, the consumer will output a verbose log of the received messages.
+
+      Steps:
+      1. Without a consumer name:
+         - The command will list all available consumers.
+         - The user will be prompted to type the name of one of the listed consumers.
+         - The user will be asked if they want a verbose output of the received messages (yes | no).
+         - If the input is invalid, the user will have three attempts to provide a correct name and response.
+
+      2. With a consumer name:
+         - The command will directly attempt to start the specified consumer.
+         - If `-verbose` is provided, the consumer will output a verbose log of the received messages.
+
+      Output:
+      - Success: "Consumer `<consumer-name>` started!"
+      - Failure: Appropriate error message if the configuration is not found or if the consumer is already started.
+
+      Example:
+      1. Interactive mode (prompt user for consumer name):
+         $ consumer-start
+         consumer1
+         consumer2
+         consumer3
+         Type the consumer name (choose one of the above):
+         Do you want a verbose output of the received messages? (yes | no):
+
+      2. Direct mode (provide consumer name and verbose flag):
+         $ consumer-start consumer1 -verbose
+
+      Note:
+      Ensure that the consumer configurations are correctly set in the configuration file before starting a consumer.
+      """;
+
+
   ConsumerStartCommand(final KafkaConsumers consumers) {
     super(CREATE_CONSUMER_COMMAND,
-          "",
+          USAGE,
           tokens -> tokens[0].equals(CREATE_CONSUMER_COMMAND));
     this.consumers = consumers;
   }

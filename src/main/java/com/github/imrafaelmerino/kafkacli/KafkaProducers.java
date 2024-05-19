@@ -1,66 +1,67 @@
 package com.github.imrafaelmerino.kafkacli;
 
 
+import jio.cli.ConsoleLogger;
+import jsonvalues.JsObj;
+import org.apache.kafka.clients.producer.KafkaProducer;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.function.Function;
-import jsonvalues.JsObj;
-import org.apache.kafka.clients.producer.KafkaProducer;
 
 final class KafkaProducers implements Function<String, KafkaProducer<Object, Object>> {
 
 
-  private final Map<String, KafkaProducer<Object, Object>> producers;
+    private final Map<String, KafkaProducer<Object, Object>> producers;
 
-  public KafkaProducers() {
-    producers = new HashMap<>();
-    Runtime.getRuntime()
-           .addShutdownHook(new Thread(() -> {
-             if (producers != null) {
-               for (KafkaProducer<Object, Object> consumer : producers.values()) {
-                 try {
-                   consumer.close();
-                 } catch (Exception e) {
-
-                 }
-               }
-             }
-           }));
-  }
-
-  public boolean isStarted(String producerName) {
-    return producers.containsKey(producerName);
-  }
-
-  public void startProducer(JsObj kafkaCommonConf,
-                            String producerName,
-                            JsObj producerConf) {
-
-    Properties kafkaCommonProps = Fun.toProperties(kafkaCommonConf);
-
-    Properties producerProps = Fun.toProperties(producerConf);
-    producerProps.putAll(kafkaCommonProps);
-
-    this.producers.put(producerName,
-                       new KafkaProducer<>(producerProps));
-
-  }
-
-  public void closeProducer(String producerName) {
-    KafkaProducer<Object, Object> producer = this.producers.get(producerName);
-    if (producer != null) {
-      producer
-          .close();
-      this.producers.remove(producerName);
+    public KafkaProducers() {
+        producers = new HashMap<>();
+        Runtime.getRuntime()
+               .addShutdownHook(new Thread(() -> {
+                   for (KafkaProducer<Object, Object> consumer : producers.values()) {
+                       try {
+                           consumer.close();
+                       } catch (Exception e) {
+                           ConsoleLogger.log("Exception closing producer during shutdown hook: %s".formatted(e));
+                       }
+                   }
+               }));
     }
-  }
+
+    public boolean isStarted(String producerName) {
+        return producers.containsKey(producerName);
+    }
+
+    public void startProducer(JsObj kafkaCommonConf,
+                              String producerName,
+                              JsObj producerConf
+                             ) {
+
+        Properties kafkaCommonProps = Fun.toProperties(kafkaCommonConf);
+
+        Properties producerProps = Fun.toProperties(producerConf);
+        producerProps.putAll(kafkaCommonProps);
+
+        this.producers.put(producerName,
+                           new KafkaProducer<>(producerProps));
+
+    }
+
+    public void closeProducer(String producerName) {
+        KafkaProducer<Object, Object> producer = this.producers.get(producerName);
+        if (producer != null) {
+            producer
+                    .close();
+            this.producers.remove(producerName);
+        }
+    }
 
 
-  @Override
-  public KafkaProducer<Object, Object> apply(final String name) {
+    @Override
+    public KafkaProducer<Object, Object> apply(final String name) {
 
-    return producers.get(name);
+        return producers.get(name);
 
-  }
+    }
 }

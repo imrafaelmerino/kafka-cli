@@ -7,14 +7,14 @@ record KafkaResponse(Instant receivedAt,
                      int partition) {
 
 
-  String getResponseReceivedMessage(String topic) {
-    return STR."""
+    String getResponseReceivedMessage(String topic) {
+        return STR."""
         Publish response received:
           Topic: \{topic}
           Offset: \{offset}
           Partition: \{partition}
           ReceivedAt: \{receivedAt}""";
-  }
+    }
 
 
 }

@@ -8,11 +8,11 @@ import java.util.function.Function;
 import java.util.random.RandomGenerator;
 import jio.IO;
 import jio.RetryPolicies;
-import jio.console.Command;
-import jio.console.ConsolePrinter;
-import jio.console.ConsolePrograms;
-import jio.console.ConsolePrograms.AskForInputParams;
-import jio.console.State;
+import jio.cli.Command;
+import jio.cli.ConsolePrinter;
+import jio.cli.ConsolePrograms;
+import jio.cli.ConsolePrograms.AskForInputParams;
+import jio.cli.State;
 import jsonvalues.JsObj;
 import jsonvalues.spec.JsonToAvro;
 import org.apache.avro.Schema;
@@ -23,38 +23,55 @@ class PublishCommand extends Command {
 
   private final static RandomGenerator keySeed = new Random();
   private final static RandomGenerator valueSeed = new Random();
+  private static final String COMMAND_NAME = "producer-publish";
   private final KafkaProducers producers;
   private final AvroSchemas avroSchemas;
   private final Map<String, Gen<?>> generators;
   private static final String USAGE = """
-      Publishes messages to a specified Kafka topic using predefined generators for message keys and values.
-      The command can interactively prompt for the channel name if not provided.
-            
-      Usage:
-      publish
-      publish {channel_name}
-            
-      Examples:
-      publish (prompts the user to input the channel name)
-      publish my_channel (publishes messages to the specified channel)
-            
-      Details:
-      - The command uses channel configurations to determine the Kafka producer, topic, and generators for keys and values.
-      - If an Avro schema is defined for the channel, the messages will be converted to Avro format before sending.
-      - The user will be prompted interactively for input if the required arguments are not provided.
-            
+      Usage: publish [channel-name]
+
+      Description:
+      The `producer-publish` command sends a generated key-value pair or value to a specified Kafka topic using the appropriate Kafka producer.
+
+      Parameters:
+      - channel-name (optional): The name of the channel to publish to. If not provided, the user will be prompted to select from a list of available channels with an `up` status.
+
+      Steps:
+      1. Without a channel name:
+         - The command will list all available channels with an `up` status.
+         - The user will be prompted to type the name of one of the listed channels.
+         - If the input is invalid, the user will have three attempts to provide a correct name.
+
+      2. With a channel name:
+         - The command will directly attempt to publish to the specified channel.
+
+      Output:
+      - Success: A message indicating that the record was successfully sent, along with the offset and partition details.
+      - Failure: Appropriate error message if the producer is not started or if the channel name is invalid.
+
+      Example:
+      1. Interactive mode (prompt user for channel name):
+         $ producer-publish
+           Name                 Producer             Status               Topic
+           --------------------------------------------------------------------------------
+           messages             producer2            up                   messageSent
+           flights              producer1            down                 flightUpdated
+           Type the channel name (choose one of the above with an `up` Status):
+
+      2. Direct mode (provide channel name):
+         $ producer-publish channel1
+
       Note:
-      Ensure that the Kafka producer for the specified channel is started before using this command.
-      Use the command `start-producer {producer_name}` to start the producer if it's not running.
+      Ensure that the channel configurations and the corresponding Kafka producers are correctly set and started before attempting to publish.
       """;
 
 
   public PublishCommand(final Map<String, Gen<?>> generators,
                         final KafkaProducers producers,
                         final AvroSchemas avroSchemas) {
-    super("publish",
+    super(COMMAND_NAME,
           USAGE,
-          args -> args[0].equals("publish"));
+          args -> args[0].equals(COMMAND_NAME));
     this.generators = generators;
     this.producers = producers;
     this.avroSchemas = avroSchemas;
@@ -172,7 +189,7 @@ class PublishCommand extends Command {
   private IO<String> sendRecordTask(final KafkaProducer<Object, Object> producer,
                                     final ProducerRecord<Object, Object> record) {
     return
-        ConsolePrinter.PRINT_NEW_LINE(Fun.getMessageSent(record))
+        IO.lazy(()->ConsolePrinter.printlnResult(Fun.getMessageSent(record)))
                       .then(_ ->
                                 IO.effect(() -> producer.send(record))
                                   .map(it -> new KafkaResponse(Instant.now(),

@@ -7,10 +7,10 @@ public record Message(String key,
                       String value,
                       JsObj headers) {
 
-  public Message {
-    if(value == null || value.isEmpty())
-      throw new IllegalArgumentException("Message value can not be null or empty");
-  }
+    public Message {
+        if (value == null || value.isEmpty())
+            throw new IllegalArgumentException("Message value can not be null or empty");
+    }
 }
 
 

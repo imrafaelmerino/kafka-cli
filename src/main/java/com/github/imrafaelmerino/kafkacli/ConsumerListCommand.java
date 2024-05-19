@@ -4,8 +4,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import jio.IO;
-import jio.console.Command;
-import jio.console.State;
+import jio.cli.Command;
+import jio.cli.State;
 import jsonvalues.JsObj;
 
 class ConsumerListCommand extends Command {
@@ -14,9 +14,29 @@ class ConsumerListCommand extends Command {
 
   final KafkaConsumers kafkaConsumers;
 
+  private static final String USAGE = """
+      Usage: consumer-list
+
+      Description:
+      The `consumer-list` command lists all Kafka consumers along with their statuses (up or down).
+
+      Output:
+      - The list of consumers with their names and statuses.
+
+      Example:
+      $ consumer-list
+      Name                 Status
+      consumer1            up
+      consumer2            down
+      consumer3            up
+
+      Note:
+      Ensure that the consumer configurations are correctly set in the configuration file to accurately reflect their statuses.
+      """;
+
   ConsumerListCommand(final KafkaConsumers kafkaConsumers) {
     super(LS_CONSUMERS_COMMAND,
-          "",
+          USAGE,
           tokens -> tokens[0].
 
               equals(LS_CONSUMERS_COMMAND));

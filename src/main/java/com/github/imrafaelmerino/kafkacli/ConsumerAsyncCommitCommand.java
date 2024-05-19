@@ -2,8 +2,8 @@ package com.github.imrafaelmerino.kafkacli;
 
 import java.util.function.Function;
 import jio.IO;
-import jio.console.Command;
-import jio.console.State;
+import jio.cli.Command;
+import jio.cli.State;
 import jsonvalues.JsObj;
 
 class ConsumerAsyncCommitCommand extends Command {
