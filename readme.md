@@ -1,9 +1,9 @@
 # Kafka CLI Documentation
 
-Welcome to Kafka CLI! Go to [Kafka CLI GitHub](https://github.com/imrafaelmerino/kafka-cli) for
-further info.
 
 ## Configuration File
+
+The configuration file provided is just an example to illustrate how the Kafka CLI works. You can customize it to fit your needs by adding any number of consumers, channels, and producers, each with their own configurations. This flexibility allows you to tailor the CLI tool to your specific Kafka setup and requirements.
 
 ```json
 {
