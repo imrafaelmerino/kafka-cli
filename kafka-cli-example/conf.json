@@ -27,7 +27,7 @@
     "consumers": {
       "consumer1": {
         "topics": [
-          "profileUpdated"
+          "topic1"
         ],
         "pollTimeoutSec": 10,
         "props": {
@@ -40,7 +40,7 @@
       },
       "consumer2": {
         "topics": [
-          "textSent"
+          "topic2"
         ],
         "pollTimeoutSec": 10,
         "props": {
@@ -80,16 +80,16 @@
   "channels": {
     "channel1": {
       "producer": "producer1",
-      "topic": "profileUpdated",
+      "topic": "topic1",
       "key-generator": "client_id",
       "value-generator": "client_profile",
-      "key-schema": "{\"type\":\"record\",\"name\":\"client_profile_key\",\"namespace\":\"com.example.client.profile.key\",\"fields\":[{\"name\":\"_id\",\"type\":\"string\"}],\"description\":\"Avro scheme with the specification of the client id\"}",
-      "value-schema": "{\"type\":\"record\",\"name\":\"client_profile_record\",\"namespace\":\"com.example.client.profile.record\",\"fields\":[{\"name\":\"c\",\"type\":\"string\"},{\"name\":\"b\",\"type\":\"string\"},{\"name\":\"a\",\"type\":\"int\"}],\"description\":\"Avro scheme with the specification of the client profile\"}"
+      "key-schema": "{\"type\":\"record\",\"name\":\"key\",\"namespace\":\"com.example.key\",\"fields\":[{\"name\":\"_id\",\"type\":\"string\"}]}",
+      "value-schema": "{\"type\":\"record\",\"name\":\"record\",\"namespace\":\"com.example.record\",\"fields\":[{\"name\":\"c\",\"type\":\"string\"},{\"name\":\"b\",\"type\":\"string\"},{\"name\":\"a\",\"type\":\"int\"}]}"
     },
     "channel2": {
       "producer": "producer2",
       "value-generator": "text",
-      "topic": "textSent"
+      "topic": "topic2"
     }
   }
 }
