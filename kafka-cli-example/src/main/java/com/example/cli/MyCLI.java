@@ -15,20 +15,20 @@ public class MyCLI {
     public static void main(String[] args) {
 
         Map<String, Gen<?>> generators = new HashMap<>();
-        generators.put("id-flight",
+        generators.put("client_id",
                        JsObjGen.of("_id",
                                    JsStrGen.alphabetic()));
-        generators.put("flight-stats",
-                       JsObjGen.of("flights",
+        generators.put("client_profile",
+                       JsObjGen.of("a",
                                    JsIntGen.arbitrary(0,
                                                       1000),
-                                   "origin",
+                                   "b",
                                    JsStrGen.alphabetic(),
-                                   "destination",
+                                   "c",
                                    JsStrGen.alphabetic()
                                   )
                       );
-        generators.put("message",
+        generators.put("text",
                        StrGen.alphabetic(10, 100));
 
         new KafkaCLI(generators).start(args);

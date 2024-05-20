@@ -78,9 +78,9 @@ public class KafkaCLI {
 
         AvroSchemas avroSchemas = new AvroSchemas(conf);
 
-        myCommands.add(new PublishCommand(generators,
-                                          producers,
-                                          avroSchemas));
+        myCommands.add(new ProducerPublishCommand(generators,
+                                                  producers,
+                                                  avroSchemas));
         myCommands.add(new PublishFileCommand(generators,
                                               producers,
                                               avroSchemas));

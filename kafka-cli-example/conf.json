@@ -13,9 +13,9 @@
       "schema.registry.url": "http://localhost:8081"
     },
     "consumers": {
-      "flights": {
+      "consumer1": {
         "topics": [
-          "flightUpdated"
+          "profileUpdated"
         ],
         "pollTimeoutSec": 10,
         "props": {
@@ -23,12 +23,12 @@
           "value.deserializer": "jsonvalues.spec.deserializers.confluent.ConfluentDeserializer",
           "auto.offset.reset": "earliest",
           "enable.auto.commit": true,
-          "group.id": "flights.cli"
+          "group.id": "kafka.cli"
         }
       },
-      "messages": {
+      "consumer2": {
         "topics": [
-          "messageSent"
+          "textSent"
         ],
         "pollTimeoutSec": 10,
         "props": {
@@ -36,7 +36,7 @@
           "value.deserializer": "org.apache.kafka.common.serialization.StringDeserializer",
           "auto.offset.reset": "earliest",
           "enable.auto.commit": true,
-          "group.id": "messages.cli"
+          "group.id": "kafka.cli"
         }
       }
     },
@@ -66,18 +66,18 @@
     }
   },
   "channels": {
-    "flights": {
+    "channel1": {
       "producer": "producer1",
-      "topic": "flightUpdated",
-      "key-generator": "id-flight",
-      "value-generator": "flight-stats",
-      "key-schema": "{\"type\":\"record\",\"name\":\"SensorStreamingInFlight_Key\",\"namespace\":\"es.eurocontrol.dplt.training.key\",\"fields\":[{\"name\":\"_id\",\"type\":\"string\"}],\"description\":\"Avro scheme with the specification of the in flights aggregation message key\"}",
-      "value-schema": "{\"type\":\"record\",\"name\":\"SensorStreamingInFlight_Record\",\"namespace\":\"es.eurocontrol.dplt.training.record\",\"fields\":[{\"name\":\"origin\",\"type\":\"string\"},{\"name\":\"destination\",\"type\":\"string\"},{\"name\":\"flights\",\"type\":\"int\"}],\"description\":\"Avro scheme with the specification of the in flights aggregation message\"}"
+      "topic": "profileUpdated",
+      "key-generator": "client_id",
+      "value-generator": "client_profile",
+      "key-schema": "{\"type\":\"record\",\"name\":\"client_profile_key\",\"namespace\":\"com.example.client.profile.key\",\"fields\":[{\"name\":\"_id\",\"type\":\"string\"}],\"description\":\"Avro scheme with the specification of the client id\"}",
+      "value-schema": "{\"type\":\"record\",\"name\":\"client_profile_record\",\"namespace\":\"com.example.client.profile.record\",\"fields\":[{\"name\":\"c\",\"type\":\"string\"},{\"name\":\"b\",\"type\":\"string\"},{\"name\":\"a\",\"type\":\"int\"}],\"description\":\"Avro scheme with the specification of the client profile\"}"
     },
-    "messages": {
+    "channel2": {
       "producer": "producer2",
-      "value-generator": "message",
-      "topic": "messageSent"
+      "value-generator": "text",
+      "topic": "textSent"
     }
   }
 }

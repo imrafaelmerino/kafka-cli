@@ -67,21 +67,10 @@ class PublishFileCommand extends Command {
         return args -> {
 
             if (args.length == 1) {
-                String channelsInfo = ConfigurationQueries.getChannelsInfo(conf,
-                                                                           producers);
-                return ConsolePrograms.ASK_FOR_PAIR(new AskForInputParams("%s\n%s".formatted(channelsInfo,
-                                                                                             "Type the channel name (choose one of the above with an `up` Status):"),
-                                                                          channel -> ConfigurationQueries.existChannel(conf,
-                                                                                                                       channel)
-                                                                                     &&
-                                                                                     ConfigurationQueries.isChannelUp(conf,
-                                                                                                                      channel,
-                                                                                                                      producers),
-                                                                          "Invalid channel name.",
-                                                                          RetryPolicies.limitRetries(3)),
-                                                    new AskForInputParams("%s\n%s".formatted(channelsInfo,
-                                                                                             "Type the file absolute path:"),
-                                                                          path -> Files.exists(Path.of(path)),
+
+                return ConsolePrograms.ASK_FOR_PAIR(Prompts.ASK_FOR_CHANNEL.apply(conf, producers),
+                                                    new AskForInputParams("\n%s".formatted("Type the file absolute path:"),
+                                                                          path -> !Files.exists(Path.of(path)),
                                                                           "File doesn't exist",
                                                                           RetryPolicies.limitRetries(3))
                                                    )

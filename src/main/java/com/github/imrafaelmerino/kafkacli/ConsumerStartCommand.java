@@ -76,13 +76,7 @@ class ConsumerStartCommand extends Command {
         return args -> {
             if (args.length == 1) {
                 var allConsumers = ConfigurationQueries.getConsumers(conf);
-                return ConsolePrograms.ASK_FOR_PAIR(new AskForInputParams("%s\n%s".formatted(String.join("\n",
-                                                                                                         allConsumers),
-                                                                                             "Type the consumer name (choose one "
-                                                                                             + "of the above):"),
-                                                                          allConsumers::contains,
-                                                                          "Invalid consumer name.",
-                                                                          RetryPolicies.limitRetries(3)),
+                return ConsolePrograms.ASK_FOR_PAIR(Prompts.ASK_FOR_CONSUMER_PARAMS.apply(allConsumers),
                                                     new AskForInputParams(
                                                             "Do you want a verbose output of the received messages? "
                                                             + "(yes | no)",

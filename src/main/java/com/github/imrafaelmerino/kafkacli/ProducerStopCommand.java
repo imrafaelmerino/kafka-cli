@@ -1,10 +1,7 @@
 package com.github.imrafaelmerino.kafkacli;
 
 import jio.IO;
-import jio.RetryPolicies;
 import jio.cli.Command;
-import jio.cli.ConsolePrograms;
-import jio.cli.ConsolePrograms.AskForInputParams;
 import jio.cli.State;
 import jsonvalues.JsObj;
 
@@ -67,15 +64,8 @@ class ProducerStopCommand extends Command {
         return args -> {
             if (args.length == 1) {
                 Set<String> allProducers = ConfigurationQueries.getProducers(conf);
-                return ConsolePrograms.ASK_FOR_INPUT(new AskForInputParams("%s\n%s".formatted(String.join("\n",
-                                                                                                          allProducers),
-                                                                                              "Type the producer name (One of the "
-                                                                                              + "above):"),
-                                                                           allProducers::contains,
-                                                                           "Invalid producer name.",
-                                                                           RetryPolicies.limitRetries(3))
-                                                    )
-                                      .then(this::stop);
+                return Prompts.ASK_FOR_PRODUCER.apply(allProducers)
+                                               .then(this::stop);
             }
             return stop(args[1]);
         };

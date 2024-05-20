@@ -2,11 +2,9 @@ package com.github.imrafaelmerino.kafkacli;
 
 import fun.gen.Gen;
 import jio.IO;
-import jio.RetryPolicies;
 import jio.cli.Command;
 import jio.cli.ConsolePrinter;
 import jio.cli.ConsolePrograms;
-import jio.cli.ConsolePrograms.AskForInputParams;
 import jio.cli.State;
 import jsonvalues.JsObj;
 import jsonvalues.spec.JsonToAvro;
@@ -20,7 +18,7 @@ import java.util.Random;
 import java.util.function.Function;
 import java.util.random.RandomGenerator;
 
-class PublishCommand extends Command {
+class ProducerPublishCommand extends Command {
 
     private final static RandomGenerator keySeed = new Random();
     private final static RandomGenerator valueSeed = new Random();
@@ -67,10 +65,10 @@ class PublishCommand extends Command {
     private final Map<String, Gen<?>> generators;
 
 
-    public PublishCommand(final Map<String, Gen<?>> generators,
-                          final KafkaProducers producers,
-                          final AvroSchemas avroSchemas
-                         ) {
+    public ProducerPublishCommand(final Map<String, Gen<?>> generators,
+                                  final KafkaProducers producers,
+                                  final AvroSchemas avroSchemas
+                                 ) {
         super(COMMAND_NAME,
               USAGE,
               args -> args[0].equals(COMMAND_NAME));
@@ -86,19 +84,8 @@ class PublishCommand extends Command {
         return args -> {
 
             if (args.length == 1) {
-                String channelsInfo = ConfigurationQueries.getChannelsInfo(conf,
-                                                                           producers);
-                return ConsolePrograms.ASK_FOR_INPUT(new AskForInputParams("%s\n%s".formatted(channelsInfo,
-                                                                                              "Type the channel name (choose one of the above with an `up` Status):"),
-                                                                           channel -> ConfigurationQueries.existChannel(conf,
-                                                                                                                        channel)
-                                                                                      &&
-                                                                                      ConfigurationQueries.isChannelUp(conf,
-                                                                                                                       channel,
-                                                                                                                       producers),
-                                                                           "Invalid channel name.",
-                                                                           RetryPolicies.limitRetries(3))
-                                                    )
+
+                return ConsolePrograms.ASK_FOR_INPUT(Prompts.ASK_FOR_CHANNEL.apply(conf, producers))
                                       .then(channel -> sendGenerated(conf,
                                                                      channel)
                                            );

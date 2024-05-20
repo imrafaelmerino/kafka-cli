@@ -1,14 +1,13 @@
 package com.github.imrafaelmerino.kafkacli;
 
 import jio.IO;
-import jio.RetryPolicies;
 import jio.cli.Command;
-import jio.cli.ConsolePrograms;
-import jio.cli.ConsolePrograms.AskForInputParams;
 import jio.cli.State;
 import jsonvalues.JsObj;
 
 import java.util.function.Function;
+
+import static jio.cli.ConsolePrograms.ASK_FOR_INPUT;
 
 class ConsumerStopCommand extends Command {
 
@@ -65,15 +64,8 @@ class ConsumerStopCommand extends Command {
         return args -> {
             if (args.length == 1) {
                 var allConsumers = ConfigurationQueries.getConsumers(conf);
-                return ConsolePrograms.ASK_FOR_INPUT(new AskForInputParams("%s\n%s".formatted(String.join("\n",
-                                                                                                          allConsumers),
-                                                                                              "Type the consumer name (choose one "
-                                                                                              + "of the above):"),
-                                                                           consumer -> allConsumers.contains(consumer),
-                                                                           "Invalid consumer name.",
-                                                                           RetryPolicies.limitRetries(3))
-                                                    )
-                                      .then(name -> stop(name));
+                return ASK_FOR_INPUT(Prompts.ASK_FOR_CONSUMER_PARAMS.apply(allConsumers))
+                        .then(this::stop);
             }
             return stop(args[1]);
         };

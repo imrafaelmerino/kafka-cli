@@ -104,17 +104,23 @@ class KafkaConsumers implements
         this.consumers.put(consumerName,
                            consumer
                           );
-        service.submit(() -> {
+        var unused = service.submit(() -> {
             while (true) {
-                var records = consumer.poll(pollTimeout);
-                if (!records.isEmpty()) {
-                    printRecords(consumerName,
-                                 topics,
-                                 records,
-                                 verbose);
+                try {
+                    var records = consumer.poll(pollTimeout);
+                    if (!records.isEmpty()) {
+                        printRecords(consumerName,
+                                     topics,
+                                     records,
+                                     verbose);
+                    }
+                } catch (Exception e) {
+                    ConsolePrinter.printlnError("Exception while fetching records from Kafka: %s ".formatted(ExceptionFun.findUltimateCause(e)));
                 }
             }
         });
+
+        assert unused!=null;
 
     }
 

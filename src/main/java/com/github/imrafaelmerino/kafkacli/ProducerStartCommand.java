@@ -1,10 +1,7 @@
 package com.github.imrafaelmerino.kafkacli;
 
 import jio.IO;
-import jio.RetryPolicies;
 import jio.cli.Command;
-import jio.cli.ConsolePrograms;
-import jio.cli.ConsolePrograms.AskForInputParams;
 import jio.cli.State;
 import jsonvalues.JsObj;
 import jsonvalues.JsPath;
@@ -53,8 +50,8 @@ class ProducerStartCommand extends Command {
             Note:
             Ensure that the producer configurations are correctly set in the configuration file before starting a producer.
             """;
-
     private final KafkaProducers producers;
+
 
     public ProducerStartCommand(final KafkaProducers producers) {
         super(CREATE_PRODUCER_COMMAND,
@@ -70,16 +67,11 @@ class ProducerStartCommand extends Command {
         return args -> {
             if (args.length == 1) {
                 Set<String> allProducers = ConfigurationQueries.getProducers(conf);
-                return ConsolePrograms.ASK_FOR_INPUT(new AskForInputParams("%s\n%s".formatted(String.join("\n",
-                                                                                                          allProducers),
-                                                                                              "Type the producer name (One of the above):"),
-                                                                           allProducers::contains,
-                                                                           "Invalid producer name.",
-                                                                           RetryPolicies.limitRetries(3))
-                                                    )
-                                      .then(producer -> start(conf,
-                                                              producer)
-                                           );
+
+                return Prompts.ASK_FOR_PRODUCER.apply(allProducers)
+                                               .then(producer -> start(conf,
+                                                                       producer)
+                                                    );
             }
 
             return start(conf,
