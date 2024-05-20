@@ -70,7 +70,7 @@ class PublishFileCommand extends Command {
 
                 return ConsolePrograms.ASK_FOR_PAIR(Prompts.ASK_FOR_CHANNEL.apply(conf, producers),
                                                     new AskForInputParams("\n%s".formatted("Type the file absolute path:"),
-                                                                          path -> !Files.exists(Path.of(path)),
+                                                                          path -> Files.exists(Path.of(path)),
                                                                           "File doesn't exist",
                                                                           RetryPolicies.limitRetries(3))
                                                    )

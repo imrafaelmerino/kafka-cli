@@ -78,11 +78,11 @@ class ConsumerStartCommand extends Command {
                 var allConsumers = ConfigurationQueries.getConsumers(conf);
                 return ConsolePrograms.ASK_FOR_PAIR(Prompts.ASK_FOR_CONSUMER_PARAMS.apply(allConsumers),
                                                     new AskForInputParams(
-                                                            "Do you want a verbose output of the received messages? "
+                                                            "\nDo you want a verbose output of the received messages? "
                                                             + "(yes | no)",
                                                             resp -> resp.equalsIgnoreCase("yes")
                                                                     || resp.equalsIgnoreCase("no"),
-                                                            "Invalid response.",
+                                                            "\nInvalid response.",
                                                             RetryPolicies.limitRetries(3)
                                                     )
                                                    )

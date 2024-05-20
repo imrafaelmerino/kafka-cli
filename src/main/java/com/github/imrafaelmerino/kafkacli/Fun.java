@@ -36,6 +36,7 @@ final class Fun {
     static String getMessageSent(final ProducerRecord<Object, Object> record) {
 
         return record.key() != null ? """
+                
                 Publish request sent:
                   Topic: %s
                   Key: %s
@@ -44,6 +45,7 @@ final class Fun {
                               record.key(),
                               record.value()) :
                 """
+                        
                         Publish request sent:
                           Topic: %s
                           Value: %s
