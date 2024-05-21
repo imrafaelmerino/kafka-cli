@@ -81,8 +81,8 @@
     "channel1": {
       "producer": "producer1",
       "topic": "topic1",
-      "key-generator": "client_id",
-      "value-generator": "client_profile",
+      "key-generator": "key",
+      "value-generator": "value",
       "key-schema": "{\"type\":\"record\",\"name\":\"key\",\"namespace\":\"com.example.key\",\"fields\":[{\"name\":\"_id\",\"type\":\"string\"}]}",
       "value-schema": "{\"type\":\"record\",\"name\":\"record\",\"namespace\":\"com.example.record\",\"fields\":[{\"name\":\"c\",\"type\":\"string\"},{\"name\":\"b\",\"type\":\"string\"},{\"name\":\"a\",\"type\":\"int\"}]}"
     },
