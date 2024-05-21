@@ -428,17 +428,17 @@ public class MyCLI {
     public static void main(String[] args) {
 
         Map<String, Gen<?>> generators = new HashMap<>();
-        generators.put("key",
+        generators.put("keyGen",
                        JsObjGen.of("_id",
                                    JsStrGen.alphabetic()));
-        generators.put("value",
+        generators.put("valueGen",
                        JsObjGen.of("a",
                                    JsIntGen.arbitrary(0, 1000),
                                    "b",
                                    JsStrGen.alphabetic(),
                                    "c",
                                    JsStrGen.alphabetic()));
-        generators.put("gen",
+        generators.put("textGen",
                        StrGen.alphabetic(10, 100));
 
         new KafkaCLI(generators).start(args);
