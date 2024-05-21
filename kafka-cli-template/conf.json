@@ -21,8 +21,7 @@
   },
   "kafka": {
     "props": {
-      "bootstrap.servers": "localhost:29092",
-      "schema.registry.url": "http://localhost:8081"
+      "bootstrap.servers": "localhost:29092"
     },
     "consumers": {
       "consumer1": {
@@ -35,6 +34,7 @@
           "value.deserializer": "jsonvalues.spec.deserializers.confluent.ConfluentDeserializer",
           "auto.offset.reset": "earliest",
           "enable.auto.commit": true,
+          "schema.registry.url": "http://localhost:8081",
           "group.id": "kafka.cli"
         }
       },
@@ -59,6 +59,7 @@
           "key.serializer": "jsonvalues.spec.serializers.confluent.ConfluentSerializer",
           "value.serializer": "jsonvalues.spec.serializers.confluent.ConfluentSerializer",
           "acks": "all",
+          "schema.registry.url": "http://localhost:8081",
           "request.timeout.ms": 3000,
           "delivery.timeout.ms": 10000,
           "linger.ms": 2000
