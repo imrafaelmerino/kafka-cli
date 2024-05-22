@@ -187,7 +187,9 @@ class ProducerPublishCommand extends Command {
                                 IO.effect(() -> producer.send(record))
                                   .map(it -> new KafkaResponse(Instant.now(),
                                                                it.offset(),
-                                                               it.partition()).getResponseReceivedMessage(record.topic())));
+                                                               it.partition())
+                                          .getResponseReceivedMessage(record.topic()))
+                       );
     }
 
     IO<String> sendValue(final Object value,

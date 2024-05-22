@@ -24,7 +24,7 @@ class Prompts {
                                                      ConfigurationQueries.isChannelUp(conf,
                                                                                       channel,
                                                                                       producers),
-                                          "Invalid channel name.",
+                                          "Invalid channel name or channel producer is not up.",
                                           RetryPolicies.limitRetries(2));
 
 

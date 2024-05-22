@@ -422,11 +422,12 @@ channel2             producer2            down                 topic2
 
 ## <a name="starting-the-cli"><a/> Starting the CLI
 
-To start the CLI, you can use the provided Maven project `kafka-cli-template`.
+To start the CLI, you can use the provided Maven project [`kafka-cli-template`](kafka-cli-template)
+).
 
 ### Step 1: Edit the `pom.xml` File
 
-Edit the `pom.xml` file to specify the main class you have to create. For example:
+Edit the [`pom.xml`](kafka-cli-template/pom.xml) file to specify the main class you have to create. For example:
 
 ```xml
 
@@ -440,21 +441,17 @@ Below is an example of what this class might look like:
 
 ```java
 package com.example.cli;
-
 import com.github.imrafaelmerino.kafkacli.KafkaCLI;
 import fun.gen.Gen;
 import fun.gen.StrGen;
 import jsonvalues.gen.JsIntGen;
 import jsonvalues.gen.JsObjGen;
 import jsonvalues.gen.JsStrGen;
-
 import java.util.HashMap;
 import java.util.Map;
 
 public class MyCLI {
-
     public static void main(String[] args) {
-
         Map<String, Gen<?>> generators = new HashMap<>();
         generators.put("keyGen",
                        JsObjGen.of("_id",
@@ -487,19 +484,20 @@ mvn exec:java
 
 ### Notes
 
-You can edit the `pom.xml` file to change the path of the configuration file and the log4j file
-where the Kafka client dumps its log entries. For example:
+You can edit the [`pom.xml`](kafka-cli-template/pom.xml) file to change the path of the configuration file and the log4j
+file where the Kafka client dumps its log entries. For example:
 
 ```xml
 
 <arguments>
     <argument>${project.basedir}/conf.json</argument>
 </arguments>
+
 <systemProperties>
-<systemProperty>
-    <key>log4jFilePath</key>
-    <value>${project.basedir}/.kafka.log</value>
-</systemProperty>
+    <systemProperty>
+        <key>log4jFilePath</key>
+        <value>${project.basedir}/.kafka.log</value>
+    </systemProperty>
 </systemProperties>
 ```
 

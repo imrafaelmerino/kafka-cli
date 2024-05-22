@@ -79,17 +79,17 @@
     }
   },
   "channels": {
-    "channel1": {
+    "1": {
       "producer": "producer1",
       "topic": "topic1",
-      "key-generator": "key",
-      "value-generator": "value",
+      "key-generator": "keyGen",
+      "value-generator": "valueGen",
       "key-schema": "{\"type\":\"record\",\"name\":\"key\",\"namespace\":\"com.example.key\",\"fields\":[{\"name\":\"_id\",\"type\":\"string\"}]}",
       "value-schema": "{\"type\":\"record\",\"name\":\"record\",\"namespace\":\"com.example.record\",\"fields\":[{\"name\":\"c\",\"type\":\"string\"},{\"name\":\"b\",\"type\":\"string\"},{\"name\":\"a\",\"type\":\"int\"}]}"
     },
-    "channel2": {
+    "2": {
       "producer": "producer2",
-      "value-generator": "text",
+      "value-generator": "textGen",
       "topic": "topic2"
     }
   }

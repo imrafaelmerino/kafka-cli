@@ -1,7 +1,7 @@
 new commands
     public static final String METRICS_PRODUCER_COMMAND = "producer-metrics";
     public static final String CLOSE_ALL_PRODUCERS_COMMAND = "producer-close-all";
-    public static final String CLOSE_ALL_CONSUMERS_COMMAND = "producer-close-all";
+    public static final String CLOSE_ALL_CONSUMERS_COMMAND = "consumer-close-all";
     public static final String ASSIGNMENT_CONSUMER_COMMAND = "consumer-assignments";
     public static final String REBALANCE_CONSUMER_COMMAND = "consumer-rebalance";
     public static final String METRICS_CONSUMER_COMMAND = "consumer-metrics";
