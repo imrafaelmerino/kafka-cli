@@ -182,28 +182,25 @@ producers, providing a convenient way to avoid repeating the same properties mul
 configuration file. For example, you always have to specify the servers.
 
 - **consumers**: Configuration for Kafka consumers.
-
-    - When using Avro to serialize data, you must use the deserializers from
+    - `topics`: List of topics the consumer subscribes to.
+    - `pollTimeoutSec`: Poll timeout in seconds.
+    - `props`: Properties specific to each consumer, such as deserializers, offset reset policy, and
+      group ID. When using Avro to serialize data, you must use the deserializers from
       [avro-spec](https://github.com/imrafaelmerino/avro-spec), as shown in `consumer1`:
       ```json
       "key.deserializer": "jsonvalues.spec.deserializers.confluent.ConfluentDeserializer",
       "value.deserializer": "jsonvalues.spec.deserializers.confluent.ConfluentDeserializer"
       ```
-    - `topics`: List of topics the consumer subscribes to.
-    - `pollTimeoutSec`: Poll timeout in seconds.
-    - `props`: Properties specific to each consumer, such as deserializers, offset reset policy, and
-      group ID.
 
 - **producers**: Configuration for Kafka producers.
 
-    - When using Avro to serialize data, you must use the serializers from
+    - `props`: Properties specific to each producer, such as serializers, acknowledgments, timeouts,
+      and linger settings. When using Avro to serialize data, you must use the serializers from
       [avro-spec](https://github.com/imrafaelmerino/avro-spec), as shown in `producer1`:
       ```json
       "key.serializer": "jsonvalues.spec.serializers.confluent.ConfluentSerializer",
       "value.serializer": "jsonvalues.spec.serializers.confluent.ConfluentSerializer"
       ```
-    - `props`: Properties specific to each producer, such as serializers, acknowledgments, timeouts,
-      and linger settings.
 
 ## `channels` Section
 
