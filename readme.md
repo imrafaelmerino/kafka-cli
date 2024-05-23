@@ -3,6 +3,7 @@
 - [List of Commands](#list)
 - [Starting the CLI](#starting-the-cli)
 - [Useful Examples](#examples)
+- [Related Projects](#rp)
 
 ## <a name="intro"><a/> Introduction
 
@@ -693,3 +694,8 @@ you time.
 This example demonstrates how you can leverage the Kafka CLI to automate common tasks, making it a
 powerful tool for managing your Kafka setup efficiently.
 
+## <a name="rp"><a/> Related Projects
+
+- [avro-spec](https://github.com/imrafaelmerino/avro-spec)
+- [jio-cli](https://github.com/imrafaelmerino/jio?tab=readme-ov-file#jio-cli)
+- [json-values](https://github.com/imrafaelmerino/json-values)
