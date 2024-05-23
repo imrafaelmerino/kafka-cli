@@ -17,7 +17,6 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Instant;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -185,7 +184,7 @@ class PublishFileCommand extends Command {
                                IO.effect(() -> producer.send(record
                                                             )
                                         )
-                                 .map(it -> new KafkaResponse(Instant.now(),
+                                 .map(it -> new KafkaResponse(record.timestamp(),
                                                               it.offset(),
                                                               it.partition()
                                  ).getResponseReceivedMessage(record.topic()))

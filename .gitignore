@@ -6,3 +6,5 @@ target
 kafka-cli-example/target
 kafka-cli-example/out
 .DS_Store
+deploy.sh
+settings.xml

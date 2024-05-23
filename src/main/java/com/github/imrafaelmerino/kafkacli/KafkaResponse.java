@@ -2,7 +2,7 @@ package com.github.imrafaelmerino.kafkacli;
 
 import java.time.Instant;
 
-record KafkaResponse(Instant receivedAt,
+record KafkaResponse(long timestamp,
                      long offset,
                      int partition) {
 
@@ -13,7 +13,7 @@ record KafkaResponse(Instant receivedAt,
           Topic: \{topic}
           Offset: \{offset}
           Partition: \{partition}
-          ReceivedAt: \{receivedAt}""";
+          Timestamp: \{Instant.ofEpochMilli(timestamp)}""";
     }
 
 

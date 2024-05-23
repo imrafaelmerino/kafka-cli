@@ -12,7 +12,6 @@ import org.apache.avro.Schema;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
-import java.time.Instant;
 import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
@@ -155,27 +154,30 @@ class ProducerPublishCommand extends Command {
                                                        JsonToAvro.convert(((JsObj) value),
                                                                           valueSchema)
                                   ));
-        } else if (valueSchema != null) {
+        }
+        if (valueSchema != null) {
             return sendRecordTask(producer,
                                   new ProducerRecord<>(topic,
                                                        key,
                                                        JsonToAvro.convert(((JsObj) value),
                                                                           valueSchema)
                                   ));
-        } else if (keySchema != null) {
+        }
+        if (keySchema != null) {
             return sendRecordTask(producer,
                                   new ProducerRecord<>(topic,
                                                        JsonToAvro.convert((JsObj) key,
                                                                           keySchema),
                                                        value
                                   ));
-        } else {
+        }
             return sendRecordTask(producer,
                                   new ProducerRecord<>(topic,
                                                        key,
                                                        value
-                                  ));
-        }
+                              )
+                             );
+
     }
 
     private IO<String> sendRecordTask(final KafkaProducer<Object, Object> producer,
@@ -185,7 +187,7 @@ class ProducerPublishCommand extends Command {
                 IO.lazy(() -> ConsolePrinter.printlnResult(Fun.getMessageSent(record)))
                   .then(_ ->
                                 IO.effect(() -> producer.send(record))
-                                  .map(it -> new KafkaResponse(Instant.now(),
+                                 .map(it -> new KafkaResponse(it.timestamp(),
                                                                it.offset(),
                                                                it.partition())
                                           .getResponseReceivedMessage(record.topic()))
@@ -206,10 +208,10 @@ class ProducerPublishCommand extends Command {
                                                        JsonToAvro.convert(((JsObj) value),
                                                                           valueSchema)));
 
-        } else {
+        }
             return sendRecordTask(producer,
                                   new ProducerRecord<>(topic,
                                                        value));
-        }
+
     }
 }
