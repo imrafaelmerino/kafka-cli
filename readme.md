@@ -368,21 +368,43 @@ producers.
 
 ```plaintext
 Welcome to kafka CLI! Go to https://github.com/imrafaelmerino/kafka-cli for further info
-~ producer
+~ list
 
+base64-decode             
+base64-encode             
+channel-list              (chls)
+clear                     
+consumer-commit           
+consumer-list             (cls)
+consumer-start            (cs)
+consumer-stop             (cst)
+echo                      
+exit                      
+file-dump                 
+file-read                 
+gen keyGen                
+gen textGen               
+gen valueGen              
+help                      
+history                   
+json-get                  
+json-pairs                
+json-pretty               
+last                      
+list                      
+print-conf                
 producer-list             (pls)
 producer-publish          (pb)
 producer-publish-file     (pbf)
 producer-start            (ps)
 producer-stop             (pst)
+script                    
+url-encode                
+var-clear                 
+var-get                   
+var-set                   
 
-~ producer-list
-
-Name                 Status
-producer1            down
-producer2            down
-
-~ producer-start
+~ ps
 
 producer1
 producer2
@@ -392,17 +414,89 @@ Type the producer name (One of the above):
 
 Producer `producer1` started!
 
-~ producer-list
+~ ps
 
-Name                 Status
-producer1            up
-producer2            down
+producer1
+producer2
 
-~ consumer-list
+Type the producer name (One of the above):
+~ producer2
 
-Name                 Status
-consumer2            down
-consumer1            down
+Producer `producer2` started!
+
+~ channel-list
+
+Name                 Producer             Status               Topic               
+--------------------------------------------------------------------------------
+1                    producer1            up                   topic1              
+2                    producer2            up                   topic2              
+
+~ pb
+
+Name                 Producer             Status               Topic               
+--------------------------------------------------------------------------------
+1                    producer1            up                   topic1              
+2                    producer2            up                   topic2              
+
+Type the channel name (choose one of the above with an `up` Status):
+~ 2
+
+Publish request sent:
+  Topic: topic2
+  Value: WFrPIbmzpmiUVQNffJOnnYyiJNscwuMwYgQnwvrfbnMTWxmuzuXkvCbRtszRQDIoxkjihSqrYpmPBaQbxZlUIuvKhdEUqQsR
+
+
+Publish response received:
+  Topic: topic2
+  Offset: 0
+  Partition: 0
+  Timestamp: 2024-05-23T20:46:39.330Z
+
+~ producer-publish 2
+
+Publish request sent:
+  Topic: topic2
+  Value: QpnFqfLaKdoqLgLGEhCNCFGYTPyxjuZRGRCrdllrHqJfNFWXmmZjbeLoQBgYZTjJsQwlUOibunwnQomqMpTSrRqzXyU
+
+
+Publish response received:
+  Topic: topic2
+  Offset: 1
+  Partition: 0
+  Timestamp: 2024-05-23T20:47:43.454Z
+
+~ last 3
+
+Publish request sent:
+  Topic: topic2
+  Value: QpnFqfLaKdoqLgLGEhCNCFGYTPyxjuZRGRCrdllrHqJfNFWXmmZjbeLoQBgYZTjJsQwlUOibunwnQomqMpTSrRqzXyU
+
+
+Publish request sent:
+  Topic: topic2
+  Value: QpnFqfLaKdoqLgLGEhCNCFGYTPyxjuZRGRCrdllrHqJfNFWXmmZjbeLoQBgYZTjJsQwlUOibunwnQomqMpTSrRqzXyU
+
+
+Publish request sent:
+  Topic: topic2
+  Value: QpnFqfLaKdoqLgLGEhCNCFGYTPyxjuZRGRCrdllrHqJfNFWXmmZjbeLoQBgYZTjJsQwlUOibunwnQomqMpTSrRqzXyU
+
+
+Publish response received:
+  Topic: topic2
+  Offset: 2
+  Partition: 0
+  Timestamp: 2024-05-23T20:47:49.080Z
+Publish response received:
+  Topic: topic2
+  Offset: 3
+  Partition: 0
+  Timestamp: 2024-05-23T20:47:51.097Z
+Publish response received:
+  Topic: topic2
+  Offset: 4
+  Partition: 0
+  Timestamp: 2024-05-23T20:47:53.110Z
 
 ~ consumer-start
 
@@ -412,23 +506,63 @@ consumer1
 Type the consumer name (choose one of the above):
 ~ consumer2
 
+
 Do you want a verbose output of the received messages? (yes | no)
 ~ yes
 
 Consumer `consumer2` started!
 
-~ consumer-list
+~ 
+Received 5 records from topics `[topic2]` in consumer `consumer2`
 
-Name                 Status
-consumer2            up
-consumer1            down
+Record 1:
+  Offset: 0
+  Key: null
+  Value: WFrPIbmzpmiUVQNffJOnnYyiJNscwuMwYgQnwvrfbnMTWxmuzuXkvCbRtszRQDIoxkjihSqrYpmPBaQbxZlUIuvKhdEUqQsR
+  Partition: 0
+  Timestamp: 1716497199330
 
-~ channel-list
+Record 2:
+  Offset: 1
+  Key: null
+  Value: QpnFqfLaKdoqLgLGEhCNCFGYTPyxjuZRGRCrdllrHqJfNFWXmmZjbeLoQBgYZTjJsQwlUOibunwnQomqMpTSrRqzXyU
+  Partition: 0
+  Timestamp: 1716497263454
 
-Name                 Producer             Status               Topic
---------------------------------------------------------------------------------
-channel1             producer1            up                   topic1
-channel2             producer2            down                 topic2
+Record 3:
+  Offset: 2
+  Key: null
+  Value: QpnFqfLaKdoqLgLGEhCNCFGYTPyxjuZRGRCrdllrHqJfNFWXmmZjbeLoQBgYZTjJsQwlUOibunwnQomqMpTSrRqzXyU
+  Partition: 0
+  Timestamp: 1716497269080
+
+Record 4:
+  Offset: 3
+  Key: null
+  Value: QpnFqfLaKdoqLgLGEhCNCFGYTPyxjuZRGRCrdllrHqJfNFWXmmZjbeLoQBgYZTjJsQwlUOibunwnQomqMpTSrRqzXyU
+  Partition: 0
+  Timestamp: 1716497271097
+
+Record 5:
+  Offset: 4
+  Key: null
+  Value: QpnFqfLaKdoqLgLGEhCNCFGYTPyxjuZRGRCrdllrHqJfNFWXmmZjbeLoQBgYZTjJsQwlUOibunwnQomqMpTSrRqzXyU
+  Partition: 0
+  Timestamp: 1716497273110
+
+
+~ producer-stop
+
+producer1
+producer2
+
+Type the producer name (One of the above):
+~ producer2
+
+Producer `producer2` closed!
+
+~ exit
+bye bye!
 ```
 
 ---
