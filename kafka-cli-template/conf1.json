@@ -1,0 +1,110 @@
+{
+  "conf": {
+    "aliases": {
+      "producer-start": "ps",
+      "producer-list": "pls",
+      "producer-stop": "pst",
+      "producer-publish": "pb",
+      "producer-publish-file": "pbf",
+      "consumer-start": "cs",
+      "consumer-list": "cls",
+      "consumer-stop": "cst",
+      "channel-list": "chls"
+    },
+    "welcome_message": "Welcome to kafka CLI! Go to https://github.com/imrafaelmerino/kafka-cli for further info",
+    "session_file_dir": "/Users/rmerino/Projects/kafka-cli/",
+    "colors": {
+      "error": "\u001B[0;31m",
+      "result": "\u001B[0;34m",
+      "prompt": "\u001B[0;32m"
+    }
+  },
+  "kafka": {
+    "props": {
+      "bootstrap.servers": "localhost:9092",
+      "schema.registry.url": "http://localhost:8081",
+      "basic.auth.credentials.source": "USER_INFO",
+      "basic.auth.user.info": "user:password",
+      "security.protocol": "SSL",
+      "sasl.mechanism": "PLAIN",
+      "ssl.truststore.location": "/path/to/truststore.jks",
+      "ssl.truststore.password": "truststore-password",
+      "ssl.keystore.location": "/path/to/keystore.jks",
+      "ssl.keystore.password": "keystore-password",
+      "ssl.key.password": "key-password",
+      "schema.registry.ssl.truststore.location": "/path/to/truststore.jks",
+      "schema.registry.ssl.truststore.password": "truststore-password",
+      "schema.registry.ssl.keystore.location": "/path/to/keystore.jks",
+      "schema.registry.ssl.keystore.password": "keystore-password"
+    },
+    "consumers": {
+      "consumer1": {
+        "topics": [
+          "topic1"
+        ],
+        "pollTimeoutSec": 10,
+        "props": {
+          "key.deserializer": "jsonvalues.spec.deserializers.confluent.ConfluentDeserializer",
+          "value.deserializer": "jsonvalues.spec.deserializers.confluent.ConfluentDeserializer",
+          "auto.offset.reset": "earliest",
+          "enable.auto.commit": true,
+          "schema.registry.url": "http://localhost:8081",
+          "group.id": "kafka.cli"
+        }
+      },
+      "consumer2": {
+        "topics": [
+          "topic2"
+        ],
+        "pollTimeoutSec": 10,
+        "props": {
+          "key.deserializer": "org.apache.kafka.common.serialization.StringDeserializer",
+          "value.deserializer": "org.apache.kafka.common.serialization.StringDeserializer",
+          "auto.offset.reset": "earliest",
+          "enable.auto.commit": true,
+          "group.id": "kafka.cli"
+        }
+      }
+    },
+    "producers": {
+      "producer1": {
+        "props": {
+          "auto.register.schemas": "false",
+          "key.serializer": "jsonvalues.spec.serializers.confluent.ConfluentSerializer",
+          "value.serializer": "jsonvalues.spec.serializers.confluent.ConfluentSerializer",
+          "acks": "all",
+          "schema.registry.url": "http://localhost:8081",
+          "request.timeout.ms": 3000,
+          "delivery.timeout.ms": 10000,
+          "linger.ms": 2000
+        }
+      },
+      "producer2": {
+        "props": {
+          "auto.register.schemas": "false",
+          "key.serializer": "org.apache.kafka.common.serialization.StringSerializer",
+          "value.serializer": "org.apache.kafka.common.serialization.StringSerializer",
+          "acks": "all",
+          "request.timeout.ms": 3000,
+          "delivery.timeout.ms": 10000,
+          "linger.ms": 2000
+        }
+      }
+    }
+  },
+  "channels": {
+    "1": {
+      "producer": "producer1",
+      "topic": "topic1",
+      "key-generator": "keyGen",
+      "value-generator": "valueGen",
+      "key-schema": "{\"type\":\"record\",\"name\":\"key\",\"namespace\":\"com.example.key\",\"fields\":[{\"name\":\"_id\",\"type\":\"string\"}]}",
+      "value-schema": "{\"type\":\"record\",\"name\":\"record\",\"namespace\":\"com.example.record\",\"fields\":[{\"name\":\"c\",\"type\":\"string\"},{\"name\":\"b\",\"type\":\"string\"},{\"name\":\"a\",\"type\":\"int\"}]}"
+    },
+    "2": {
+      "producer": "producer2",
+      "value-generator": "textGen",
+      "topic": "topic2"
+    }
+  }
+}

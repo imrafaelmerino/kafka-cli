@@ -2,6 +2,7 @@
 - [Configuration File](#conf)
 - [List of Commands](#list)
 - [Starting the CLI](#starting-the-cli)
+- [Useful Examples](#examples)
 
 ## <a name="intro"><a/> Introduction
 
@@ -33,6 +34,9 @@ these challenges by providing an easy-to-use interface for performing common Kaf
 
 - **Session Logging**: Every command and its output can be automatically logged to a session file
   (if specified), providing an audit trail and making it easier to debug and review your operations.
+
+- **Extensibility**: Since it's developed in Java, it is extremely easy to add custom and complex
+  commands to Kafka CLI.
 
 ## <a name="conf"><a/> Configuration File
 
@@ -180,32 +184,41 @@ configurations).
 The common Kafka properties specified under `props` will be added to all the consumers and
 producers, providing a convenient way to avoid repeating the same properties multiple times in the
 configuration file. For example, you always have to specify the servers.
+You may need some additional general properties for secure communication and authentication between Kafka clients,
+brokers, and the schema registry.
+Find an example in this [configuration file](kafka-cli-template/conf1.json)
 
-- **consumers**: Configuration for Kafka consumers.
-    - `topics`: List of topics the consumer subscribes to.
-    - `pollTimeoutSec`: Poll timeout in seconds.
-    - `props`: Properties specific to each consumer, such as deserializers, offset reset policy, and
-      group ID. When using Avro to serialize data, you must use the deserializers from
-      [avro-spec](https://github.com/imrafaelmerino/avro-spec), as shown in `consumer1`:
-      ```json
-      "key.deserializer": "jsonvalues.spec.deserializers.confluent.ConfluentDeserializer",
-      "value.deserializer": "jsonvalues.spec.deserializers.confluent.ConfluentDeserializer"
-      ```
+#### Consumers
 
-- **producers**: Configuration for Kafka producers.
+Configuration for Kafka consumers.
 
-    - `props`: Properties specific to each producer, such as serializers, acknowledgments, timeouts,
-      and linger settings. When using Avro to serialize data, you must use the serializers from
-      [avro-spec](https://github.com/imrafaelmerino/avro-spec), as shown in `producer1`:
-      ```json
-      "key.serializer": "jsonvalues.spec.serializers.confluent.ConfluentSerializer",
-      "value.serializer": "jsonvalues.spec.serializers.confluent.ConfluentSerializer"
-      ```
+- `topics`: List of topics the consumer subscribes to.
+- `pollTimeoutSec`: Poll timeout in seconds.
+- `props`: Properties specific to each consumer, such as deserializers, offset reset policy, and
+  group ID. When using Avro to serialize data, you must use the deserializers from
+  [avro-spec](https://github.com/imrafaelmerino/avro-spec), as shown in `consumer1`:
+  ```json
+  "key.deserializer": "jsonvalues.spec.deserializers.confluent.ConfluentDeserializer",
+  "value.deserializer": "jsonvalues.spec.deserializers.confluent.ConfluentDeserializer"
+  ```
 
-## `channels` Section
+#### Producers
+
+Configuration for Kafka producers.
+
+- `props`: Properties specific to each producer, such as serializers, acknowledgments, timeouts,
+  and linger settings. When using Avro to serialize data, you must use the serializers from
+  [avro-spec](https://github.com/imrafaelmerino/avro-spec), as shown in `producer1`:
+  ```json
+  "key.serializer": "jsonvalues.spec.serializers.confluent.ConfluentSerializer",
+  "value.serializer": "jsonvalues.spec.serializers.confluent.ConfluentSerializer"
+  ```
+
+#### `channels` Section
 
 This section defines channels, which are logical groupings that link producers to topics and define
 schemas and generators for keys and values. Generators specified in the channels are necessary to
+
 use the `producer-publish` command, which uses them to generate the data.
 
 - **producer**: The name of the producer associated with this channel.
@@ -217,7 +230,7 @@ use the `producer-publish` command, which uses them to generate the data.
 - **key-schema**: The Avro schema for the keys.
 - **value-schema**: The Avro schema for the values.
 
-## Summary
+### Summary
 
 This configuration file allows you to set up and manage your Kafka CLI tool effectively by defining
 shortcuts, message formats, Kafka properties, consumer and producer settings, and channels linking
@@ -422,12 +435,12 @@ channel2             producer2            down                 topic2
 
 ## <a name="starting-the-cli"><a/> Starting the CLI
 
-To start the CLI, you can use the provided Maven project [`kafka-cli-template`](kafka-cli-template)
-).
+To start the CLI, you can use the provided Maven project [`kafka-cli-template`](kafka-cli-template).
 
 ### Step 1: Edit the `pom.xml` File
 
-Edit the [`pom.xml`](kafka-cli-template/pom.xml) file to specify the main class you have to create. For example:
+Edit the [`pom.xml`](kafka-cli-template/pom.xml) file to specify the main class you have to create.
+For example:
 
 ```xml
 
@@ -441,14 +454,12 @@ Below is an example of what this class might look like:
 
 ```java
 package com.example.cli;
+
 import com.github.imrafaelmerino.kafkacli.KafkaCLI;
-import fun.gen.Gen;
-import fun.gen.StrGen;
-import jsonvalues.gen.JsIntGen;
-import jsonvalues.gen.JsObjGen;
-import jsonvalues.gen.JsStrGen;
-import java.util.HashMap;
-import java.util.Map;
+import fun.gen.*;
+import jsonvalues.*;
+
+import java.util.*;
 
 public class MyCLI {
     public static void main(String[] args) {
@@ -476,7 +487,9 @@ As you can see, the generators specified in the configuration file (`keyGen`, `v
 
 ### Step 3: Execute the Maven Command
 
-To start the CLI, execute the following Maven command:
+To start the CLI, execute the
+
+following Maven command:
 
 ```sh
 mvn exec:java
@@ -484,8 +497,8 @@ mvn exec:java
 
 ### Notes
 
-You can edit the [`pom.xml`](kafka-cli-template/pom.xml) file to change the path of the configuration file and the log4j
-file where the Kafka client dumps its log entries. For example:
+You can edit the [`pom.xml`](kafka-cli-template/pom.xml) file to change the path of the
+configuration file and the log4j file where the Kafka client dumps its log entries. For example:
 
 ```xml
 
@@ -494,10 +507,10 @@ file where the Kafka client dumps its log entries. For example:
 </arguments>
 
 <systemProperties>
-    <systemProperty>
-        <key>log4jFilePath</key>
-        <value>${project.basedir}/.kafka.log</value>
-    </systemProperty>
+<systemProperty>
+    <key>log4jFilePath</key>
+    <value>${project.basedir}/.kafka.log</value>
+</systemProperty>
 </systemProperties>
 ```
 
@@ -505,3 +518,44 @@ This configuration specifies that the CLI will use `conf.json` for its configura
 `.kafka.log` for logging.
 
 ---
+
+## <a name="examples"><a/> Useful Examples
+
+Here's a useful script example that demonstrates how to automate a series of Kafka CLI commands
+using a script file.
+
+### Script File Example
+
+Create a script file named `my_publisher.jio` with the following contents:
+
+```plaintext
+producer-start producer2
+producer-publish 2
+last every 100 for 10000
+producer-stop producer2
+```
+
+This script will:
+
+1. Start the producer named `producer2`.
+2. Publish a generated message using the channel named `2`.
+3. Repeat the last command (which is `producer-publish 2`) every 100 milliseconds for a total
+   duration of 10000 ms (10 seconds).
+4. Stop the producer named `producer2`.
+
+### Running the Script
+
+To run the script, use the following command in kafka-cli:
+
+```sh
+~ script ${DIR_PATH}/my_publisher.jio
+```
+
+This will execute all the commands in `my_publisher.jio` sequentially, automating the process and saving
+you time.
+
+---
+
+This example demonstrates how you can leverage the Kafka CLI to automate common tasks, making it a
+powerful tool for managing your Kafka setup efficiently.
+

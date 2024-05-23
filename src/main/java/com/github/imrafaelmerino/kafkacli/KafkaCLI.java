@@ -2,6 +2,7 @@ package com.github.imrafaelmerino.kafkacli;
 
 import fun.gen.Gen;
 import jio.ExceptionFun;
+import jio.IO;
 import jio.cli.Command;
 import jio.cli.Console;
 import jio.cli.GenerateCommand;
@@ -61,6 +62,12 @@ public class KafkaCLI {
         return parser.parse(Files.readAllBytes(path));
     }
 
+
+    public IO<String> executeCommand(JsObj conf, String command) {
+        return createConsole(conf).executeCommand(conf, command);
+    }
+
+
     public void start(String[] args) {
         JsObj conf;
         try {
@@ -69,6 +76,13 @@ public class KafkaCLI {
             throw new UncheckedIOException(e);
         }
 
+        Console cli = createConsole(conf);
+
+        cli.eval(conf);
+
+    }
+
+    private Console createConsole(JsObj conf) {
         validate(conf);
 
         List<Command> myCommands = new ArrayList<>();
@@ -86,27 +100,21 @@ public class KafkaCLI {
                                               avroSchemas));
         myCommands.add(new ProducerStartCommand(producers));
         myCommands.add(new ConsumerAsyncCommitCommand(consumers));
-
         myCommands.add(new ProducerStopCommand(producers));
-
         myCommands.add(new ConsumerStopCommand(consumers));
-
         myCommands.add(new ConsumerStartCommand(consumers));
-
         myCommands.add(new ConsumerListCommand(consumers));
         myCommands.add(new ProducerListCommand(producers));
         myCommands.add(new ChannelListCommand(producers));
 
-        for (String genName : generators.keySet()) {
+        for (var genName : generators.keySet()) {
             myCommands.add(new GenerateCommand(genName,
-                                               "",
+                                               "Data Generator",
                                                generators.get(genName)
                                                          .map(Object::toString)));
         }
         Console cli = new Console(myCommands);
-
-        cli.eval(conf);
-
+        return cli;
     }
 
     private void validate(final JsObj conf) {
