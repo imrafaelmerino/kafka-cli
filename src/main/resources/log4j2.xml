@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="off" name="Adapter" packages="">
-  <Appenders>
-    <File name="File" fileName="${sys:log4jFilePath:-./kafka-client.log}">
-      <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n"/>
-    </File>
-  </Appenders>
-  <Loggers>
-    <Root level="DEBUG">
-      <AppenderRef ref="File"/>
-    </Root>
-  </Loggers>
+<Configuration status="off" name="KAFKA-CLI" packages="">
+    <Appenders>
+        <File name="File" fileName="${sys:log4jFilePath:-./kafka-client.log}">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n"/>
+        </File>
+    </Appenders>
+    <Loggers>
+        <Root level="DEBUG">
+            <AppenderRef ref="File"/>
+        </Root>
+    </Loggers>
 </Configuration>
