@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.imrafaelmerino</groupId>
     <artifactId>kafka-cli</artifactId>
-    <version>1.0.0-RC2</version>
+    <version>1.0.0-RC3</version>
     <name>kafka-cli</name>
     <description>Kafka CLI is a command-line interface tool designed to simplify the management and interaction with Apache Kafka. It allows you to manage Kafka producers and consumers, publish messages to Kafka topics, and define channels with customizable schemas and data generators</description>
     <url>https://github.com/imrafaelmerino/kafka-cli</url>

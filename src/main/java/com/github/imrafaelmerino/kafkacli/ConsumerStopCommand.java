@@ -76,7 +76,7 @@ class ConsumerStopCommand extends Command {
             if (!consumers.isStarted(consumerName)) {
                 return "Consumer `%s` already closed!".formatted(consumerName);
             }
-            consumers.stopConsumer(consumerName);
+            consumers.closeConsumer(consumerName);
             return "Consumer `%s` closed!".formatted(consumerName);
         });
     }

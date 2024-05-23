@@ -8,6 +8,7 @@ import jsonvalues.JsObj;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.errors.WakeupException;
 
 import java.time.Duration;
 import java.util.*;
@@ -114,13 +115,18 @@ class KafkaConsumers implements
                                      records,
                                      verbose);
                     }
-                } catch (Exception e) {
+                }
+                catch (WakeupException e){
+                    consumer.close();
+                    break;
+                }
+                catch (Exception e) {
                     ConsolePrinter.printlnError("Exception while fetching records from Kafka: %s ".formatted(ExceptionFun.findUltimateCause(e)));
                 }
             }
         });
 
-        assert unused!=null;
+        assert unused != null;
 
     }
 
@@ -136,11 +142,11 @@ class KafkaConsumers implements
                       });
     }
 
-    void stopConsumer(String consumerName) {
+    void closeConsumer(String consumerName) {
 
         KafkaConsumer<Object, Object> consumer = this.consumers.get(consumerName);
         if (consumer != null) {
-            consumer.close();
+            consumer.wakeup();
             this.consumers.remove(consumerName);
         }
     }
