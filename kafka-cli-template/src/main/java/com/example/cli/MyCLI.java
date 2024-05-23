@@ -31,7 +31,7 @@ public class MyCLI {
         generators.put("textGen",
                        StrGen.alphabetic(10, 100));
 
-        new KafkaCLI(generators);
+        new KafkaCLI(generators).start(args);
 
 
     }
