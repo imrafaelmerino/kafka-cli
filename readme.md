@@ -367,7 +367,7 @@ producers.
 
 ## Examples of Commands and Outputs
 
-```plaintext
+```shell
 Welcome to kafka CLI! Go to https://github.com/imrafaelmerino/kafka-cli for further info
 ~ list
 
@@ -488,11 +488,13 @@ Publish response received:
   Offset: 2
   Partition: 0
   Timestamp: 2024-05-23T20:47:49.080Z
+
 Publish response received:
   Topic: topic2
   Offset: 3
   Partition: 0
   Timestamp: 2024-05-23T20:47:51.097Z
+
 Publish response received:
   Topic: topic2
   Offset: 4
@@ -580,6 +582,7 @@ For example:
 ```xml
 
 <mainClass>com.example.cli.MyCLI</mainClass>
+
 ```
 
 ### Step 2: Create the Main Class
